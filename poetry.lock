@@ -1,0 +1,37 @@
+[[package]]
+category = "main"
+description = "2D and 3D vector, matrix, quaternion and geometry module. updated to python 3."
+name = "euclid3"
+optional = false
+python-versions = "*"
+version = "0.01"
+
+[[package]]
+category = "main"
+description = "Cross-platform windowing and multimedia library"
+name = "pyglet"
+optional = false
+python-versions = "*"
+version = "1.4.0b1"
+
+[package.source]
+reference = ""
+type = "directory"
+url = "/home/jofo/bygg/pyglet"
+
+[[package]]
+category = "main"
+description = "Pure Python PNG image encoder/decoder"
+name = "pypng"
+optional = false
+python-versions = "*"
+version = "0.0.20"
+
+[metadata]
+content-hash = "f843a1a232109089422dd6ded03a1b75263bd620d5a6c999a0cb7164aa2cce38"
+python-versions = "^3.6"
+
+[metadata.hashes]
+euclid3 = ["25b827a57adbfd9a3fa8625e43abc3e907f61de622343e7e538482ef9b46fd0b"]
+pyglet = []
+pypng = ["1032833440c91bafee38a42c38c02d00431b24c42927feb3e63b104d8550170b"]
