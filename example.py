@@ -1,7 +1,6 @@
 import logging
 import math
 from time import time
-from traceback import format_exc
 
 import pyglet
 from pyglet import gl
@@ -9,11 +8,8 @@ from euclid3 import Matrix4
 
 from ugly.framebuffer import FrameBuffer
 from ugly.glutil import gl_matrix
-from ugly.texture import ImageTexture
-from ugly.matrix import make_view_matrix_persp, make_frustum_perspective
 from ugly.mesh import ObjMesh
 from ugly.shader import Program, VertexShader, FragmentShader
-from ugly.obj import parse_obj_file
 from ugly.vao import VertexArrayObject
 
 
@@ -26,7 +22,7 @@ def try_except_log(f):
         try:
             return f(*args, **kwargs)
         except Exception:
-            logging.error(format_exc())
+            logging.exception(f"Exception caught in callback {f}.")
     return inner
 
 
@@ -66,14 +62,23 @@ class UglyWindow(pyglet.window.Window):
         with self.view_program, self.offscreen_buffer:
 
             # Setup our matrix
-            frust = make_frustum_perspective(height=0.1*aspect)
+            near = 0.1
+            far = 10
+            width = 0.1
+            height = 0.1 * aspect
+            frustum = (Matrix4.new(
+                near / width, 0, 0, 0,
+                0, near / height, 0, 0,
+                0, 0, -(far + near)/(far - near), -1,
+                0, 0, -2 * far * near/(far - near), 0
+            ))
             view_matrix = (Matrix4
                            .new_scale(1, 1, 1)
                            .translate(0, 0, -5)
                            .rotatex(-math.pi/2)
                            .rotatez(time()))
             gl.glUniformMatrix4fv(0, 1, gl.GL_FALSE,
-                                  gl_matrix(frust * view_matrix))
+                                  gl_matrix(frustum * view_matrix))
 
             # Render a model
             self.offscreen_buffer.clear()
