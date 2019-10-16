@@ -1,6 +1,7 @@
 #version 450 core
 
-uniform sampler2D tex;
+layout (binding = 0) uniform sampler2D colorTex;
+layout (binding = 1) uniform sampler2D normalTex;
 
 in VS_OUT {
   vec2 texcoord;
@@ -9,6 +10,5 @@ in VS_OUT {
 out vec4 color;
 
 void main(void) {
-  //color = vec4(0.0, 0.8, 1.0, 1.0);
-  color = texture(tex, fs_in.texcoord);
+  color = texture(normalTex, fs_in.texcoord);
 }

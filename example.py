@@ -44,7 +44,6 @@ class UglyWindow(pyglet.window.Window):
         )
 
         self.suzanne = ObjMesh("obj/suzanne.obj")
-        print(self.suzanne)
 
         self.vao = VertexArrayObject()
 
@@ -56,36 +55,34 @@ class UglyWindow(pyglet.window.Window):
     @try_except_log
     def on_draw(self):
 
-        gl.glViewport(0, 0, *self.size)
+        w, h = self.size
+        aspect = h / w
 
         gl.glDisable(gl.GL_BLEND)
         gl.glEnable(gl.GL_DEPTH_TEST)
         gl.glDisable(gl.GL_CULL_FACE)
 
-        w, h = self.size
-        aspect = h / w
-
         # Render to an offscreen buffer
         with self.view_program, self.offscreen_buffer:
-            gl.glClearBufferfv(gl.GL_COLOR, 0, (gl.GLfloat * 4)(1, 0, 0, 1))
-            gl.glClearBufferfv(gl.GL_DEPTH, 0, (gl.GLfloat * 4)(1, 1, 1, 1))
 
+            # Setup our matrix
             frust = make_frustum_perspective(height=0.1*aspect)
-            view_matrix = (
-                Matrix4
-                .new_scale(1, 1, 1)
-                .translate(0, 0, -5)
-                .rotatey(-math.pi/2 + time())
-                .rotatex(-math.pi/2)
-            )
+            view_matrix = (Matrix4
+                           .new_scale(1, 1, 1)
+                           .translate(0, 0, -5)
+                           .rotatex(-math.pi/2)
+                           .rotatez(time()))
             gl.glUniformMatrix4fv(0, 1, gl.GL_FALSE,
                                   gl_matrix(frust * view_matrix))
+
+            # Render a model
+            self.offscreen_buffer.clear()
             self.suzanne.draw()
 
         # Now copy the offscreen buffer to the window's buffer
         with self.vao, self.copy_program:
-            gl.glClearBufferfv(gl.GL_COLOR, 0, (gl.GLfloat * 4)(0, 0, 1, 1))
-            with self.offscreen_buffer.color_texture:
+            with self.offscreen_buffer.color_texture, \
+                 self.offscreen_buffer.normal_texture:
                 gl.glDrawArrays(gl.GL_TRIANGLES, 0, 6)
 
 

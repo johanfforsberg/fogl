@@ -1,10 +1,19 @@
 #version 450 core
 
-layout (location = 1) uniform vec3 line_color = vec3(1, 1, 0);
+layout (location = 1) uniform vec4 color = vec4(1, 1, 0, 1);
 
-out vec4 color;
+in VS_OUT {
+  vec4 color;
+  vec4 normal;
+  vec2 texcoord;
+} fs_in;
+
+
+layout (location = 0) out vec4 color_out;
+layout (location = 1) out vec4 normal_out;
+
 
 void main(void) {
-  color = vec4(0.0, 0.8, 1.0, 1.0);
-  //color = vec4(line_color, 1);
+  color_out = fs_in.color * color;
+  normal_out = fs_in.normal;
 }

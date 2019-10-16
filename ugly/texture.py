@@ -46,6 +46,17 @@ class Texture(LoggerMixin):
         gl.glBindTexture(gl.GL_TEXTURE_2D, 0)
         gl.glActiveTexture(gl.GL_TEXTURE0)
 
+    def clear(self):
+        gl.glClearTexImage(self.name, 0, gl.GL_RGBA, gl.GL_FLOAT, None)
+
+
+class ByteTexture(Texture):
+
+    _type = gl.GL_R8
+
+    def clear(self):
+        gl.glClearTexImage(self.name, 0, gl.GL_RED, gl.GL_UNSIGNED_BYTE, None)
+
 
 class NormalTexture(Texture):
 
@@ -56,12 +67,8 @@ class DepthTexture(Texture):
 
     _type = gl.GL_DEPTH_COMPONENT32F
 
-
-def load_png(filename):
-    data = resources.read_binary(texture, filename)
-    reader = png.Reader(bytes=data)
-    width, height, rows, info = reader.asRGBA()
-    return (width, height), list(rows)
+    def clear(self):
+        gl.glClearTexImage(self.name, 0, gl.GL_DEPTH, gl.GL_FLOAT, None)  # Correct?
 
 
 EPSILON = 0.0001  # a tiny offset to make sure that the edges of a texture
