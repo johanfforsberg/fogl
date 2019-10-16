@@ -1,5 +1,5 @@
 """
-Handling of GL vertex (attribute) data
+Handling of GL vertex (attribute) data, such as 3D models.
 """
 
 
@@ -33,12 +33,10 @@ class Vertices(LoggerMixin):
 
     _fields = [
         # (name, type, size)
-        # TODO I think most of these could be lower precision, to save space.
         ('position', gl.GL_FLOAT, 3),
         ('color', gl.GL_FLOAT, 3),
         ('normal', gl.GL_FLOAT, 3),
-        ('texture', gl.GL_FLOAT, 3),
-        ('info', gl.GL_FLOAT, 3),  # internal data
+        ('texture', gl.GL_FLOAT, 3)
     ]
 
     _structure = build_structure(_fields)
@@ -79,13 +77,9 @@ class Vertices(LoggerMixin):
         return bool(self.index_buffer)
 
     def draw(self, mode=gl.GL_TRIANGLES, indices=None):
-        # TODO make this some kind of settings?
-        gl.glEnable(gl.GL_CULL_FACE)
-        gl.glEnable(gl.GL_DEPTH_TEST)
         if indices:
             with indices:
                 gl.glDrawElements(mode, len(indices), gl.GL_UNSIGNED_INT, 0)
         else:
             with self.index_buffer:
                 gl.glDrawElements(mode, self.length, gl.GL_UNSIGNED_INT, 0)
-            # gl.glDrawArrays(mode, 0, self.length)

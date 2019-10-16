@@ -1,3 +1,4 @@
+from abc import ABCMeta
 from ctypes import cast, pointer, byref, create_string_buffer, POINTER, c_char
 
 from pyglet import gl
@@ -5,23 +6,22 @@ from pyglet import gl
 from .util import LoggerMixin
 
 
-class Shader(LoggerMixin):
+class Shader(LoggerMixin, metaclass=ABCMeta):
 
     """
-    A light wrapper for GL shaders. Loads GLSL code from disk.
+    A light wrapper for GL shaders. Loads GLSL code from disk and compiles it.
     """
-
-    kind = None
 
     def __init__(self, source_file):
         self.name = gl.glCreateShader(self.kind)
-        #self.source = read_binary(glsl_resource, source_file)
         self.source = open(source_file, "rb").read()
+
         src_buffer = create_string_buffer(self.source)
         buf_pointer = cast(pointer(pointer(src_buffer)), POINTER(POINTER(c_char)))
         gl.glShaderSource(self.name, 1, buf_pointer, None)
         gl.glCompileShader(self.name)
         success = gl.GLint(0)
+
         gl.glGetShaderiv(self.name, gl.GL_COMPILE_STATUS, byref(success))
         if not success.value:
             self._log_error()
@@ -30,7 +30,7 @@ class Shader(LoggerMixin):
     def _log_error(self):
         log_length = gl.GLint(0)
         gl.glGetShaderiv(self.name, gl.GL_INFO_LOG_LENGTH, byref(log_length))
-        # print any error messages
+
         log_buffer = create_string_buffer(log_length.value)
         gl.glGetShaderInfoLog(self.name, log_length.value, None, log_buffer)
         self.logger.error("Error compiling GLSL (type %s) shader!", self.kind)
@@ -62,7 +62,8 @@ class FragmentShader(Shader):
 class Program(LoggerMixin):
 
     """
-    A program consists of a set of Shaders.
+    A program consists of a set of Shaders. It should contain at least a
+    vertex shader and a fragment shader. Geometry shader is optional.
     """
 
     def __init__(self, *shaders):
@@ -73,6 +74,7 @@ class Program(LoggerMixin):
         gl.glLinkProgram(self.name)
         success = gl.GLint(0)
         gl.glGetProgramiv(self.name, gl.GL_LINK_STATUS, byref(success))
+
         if not success:
             log_length = gl.GLint(0)
             gl.glGetProgramiv(self.name, gl.GL_INFO_LOG_LENGTH, byref(log_length))

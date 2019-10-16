@@ -1,20 +1,18 @@
+"""
+Functionality related to textures.
+"""
+
 from ctypes import byref
 from itertools import chain
-import json
 from math import pi, sqrt
-import os
 
 from euclid3 import Matrix4
 from pyglet import gl
-# import png
 
 from .glutil import gl_matrix
-from .matrix import make_model_matrix, make_view_matrix_persp
-from .shader import Program, VertexShader, FragmentShader
-from .util import LoggerMixin
 
 
-class Texture(LoggerMixin):
+class Texture:
 
     _type = gl.GL_RGBA8
 
@@ -71,17 +69,12 @@ class DepthTexture(Texture):
         gl.glClearTexImage(self.name, 0, gl.GL_DEPTH, gl.GL_FLOAT, None)  # Correct?
 
 
-EPSILON = 0.0001  # a tiny offset to make sure that the edges of a texture
-                  # are within the texture and not in the neighbor
-
-
-class ImageTexture(LoggerMixin):
+class ImageTexture:
 
     def __init__(self, image, size, atlas=None):
         self.image = image
         self.size = size
         self.atlas = atlas
-        self.logger.warn("Loaded image %r", self.size)
         self._setup()
 
     def _setup(self):
@@ -113,7 +106,7 @@ class ImageTexture(LoggerMixin):
     def image_coords_to_texture_coords(self, img_coords):
         iw, ih = self.size
         x, y, w, h = img_coords
-        return x/iw+EPSILON, y/ih+EPSILON, w/iw-2*EPSILON, h/ih-2*EPSILON
+        return x/iw, y/ih, w/iw-2, h/ih-2
 
     def __getitem__(self, key):
         "Return raw texture atlas coords"
@@ -126,36 +119,7 @@ class ImageTexture(LoggerMixin):
         gl.glBindTexture(gl.GL_TEXTURE_2D, 0)
 
 
-class MultiImageTexture(ImageTexture):
-
-    def __init__(self, filenames):
-        sizes, images = zip(*(load_png(f) for f in filenames))
-        print(sizes)
-        self.size, self.image = self._stitch_images(sizes, images)
-        self.atlas = {}
-        for f in filenames:
-            base_name = os.path.splitext(f)[0]
-            print(base_name)
-            try:
-                with resources.open_text(texture, f"{base_name}.json") as f:
-                    atlas = json.load(f)
-            except OSError:
-                continue
-            self.atlas[os.path.basename(base_name)] = atlas
-        self._setup()
-
-    def _stitch_images(self, sizes, imgs):
-        width = sum(s[0] for s in sizes)
-        assert all(s[1] == sizes[0][1] for s in sizes), "Can only stitch images of equal height"
-        new_img = [b''.join(rows) for rows in zip(*imgs)]
-        return (width, sizes[0][1]), new_img
-
-    def get_texture_coords(self, name, key):
-        "Look up the given name in the texture atlas and return its UV coords"
-        return self.image_coords_to_texture_coords(self.atlas[name][key])
-
-
-class CubeMap(LoggerMixin):
+class CubeMap:
 
     # program = Program(
     #     VertexShader("copy_vert.glsl"),
