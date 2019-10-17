@@ -10,20 +10,8 @@ from ugly.framebuffer import FrameBuffer
 from ugly.glutil import gl_matrix
 from ugly.mesh import ObjMesh
 from ugly.shader import Program, VertexShader, FragmentShader
+from ugly.util import try_except_log
 from ugly.vao import VertexArrayObject
-
-
-print(pyglet.__path__)
-
-
-def try_except_log(f):
-    "A decorator useful for debugging event callbacks whose exceptions get eaten by pyglet."
-    def inner(*args, **kwargs):
-        try:
-            return f(*args, **kwargs)
-        except Exception:
-            logging.exception(f"Exception caught in callback {f}.")
-    return inner
 
 
 class UglyWindow(pyglet.window.Window):
