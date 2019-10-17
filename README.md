@@ -1,18 +1,18 @@
-Ugly
+ugly
 ====
 
-Ugly is a thin python wrapper around pyglet's OpenGL layer. 
+ugly is a collection of utility wrappers around pyglet's OpenGL layer. 
 
-It's purpose is to make GL programming more convenient, mostly by eliminating "boiler plate" code and helping with tracking state. Ugly tries to do as little as possible while still providing some useful abstractions. Ugly tries to make OpenGL programming feel more like python, without getting in the way of whatever it is you've got to do. It's really just a bunch of wrapper classes that encapsulate some of the more annoying GL stuff.
+It's purpose is to make GL programming more convenient, mostly by eliminating "boiler plate" code and helping with tracking state. ugly tries to do as little as possible while still providing some useful abstractions. It's basically a bunch of classes that encapsulate some of the more annoying aspects of GL. They are intended to be easy to subclass and modify. Many of them work as context managers that keep track of state changes. There are also a few utilities included, e.g. for loading OBJ files.
 
-It's *not* any of these things:
+ugly is not, nor does it want to be, any of these things:
+
 * A complete 3D framework that lets you get by without ever seeing the OpenGL API
 * An opinionated library that helps you (or forces you to) structure your code 
-* Really a stand alone library at all; possibly the best way to use it is to incorporate it into your own code and customize it as needed.
+* Really much of a stand alone library at all; one reasonable way to use it might be to incorporate the parts you like into your own code and customize it as needed.
 
-Ugly currently does not care much about old versions of stuff; it assumes you're able to run at least OpenGL 4.5. This is mostly because of laziness; Ugly was written mostly using the OpenGL Superbible, 7th ed. which uses mainly 'modern' GL idioms.
+ugly currently assumes you're able to run at least OpenGL 4.5. This is mostly because of laziness; ugly was written with the help of the excellent "OpenGL Superbible", 7th ed. which relies on modern GL idioms. ugly also requires at least python 3.6.
 
-The dependency on pyglet does not mean that you necessarily have to build your entire application using pyglet; Ugly only uses the GL wrapper part of pyglet and can be integrated with any other library that can coexist with pyglet. E.g. glfw works fine.
+Note: The dependency on pyglet does not mean that you necessarily have to build your entire application around pyglet. ugly only uses pyglet's GL wrapper and should work with any other library that can coexist with pyglet, e.g. glfw.
 
-
-
+Disclaimer: I'm not an OpenGL expert. ugly is simply the result of numerous rewrites trying to get some game code to make sense. Finally I just broke it out into a separate package, to be able to use it in several projects. It works for what I'm doing and I'm hoping it can be useful to others. If you have any ideas about improvements feel free to file issues or pull requests.
