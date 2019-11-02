@@ -1,6 +1,7 @@
 import logging
 import math
 from time import time
+from pathlib import Path
 
 import pyglet
 from pyglet import gl
@@ -18,16 +19,17 @@ class UglyWindow(pyglet.window.Window):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        local = Path(__file__).parent
         self.view_program = Program(
-            VertexShader("glsl/view_vertex.glsl"),
-            FragmentShader("glsl/view_fragment.glsl")
+            VertexShader(local / "glsl/view_vertex.glsl"),
+            FragmentShader(local / "glsl/view_fragment.glsl")
         )
         self.copy_program = Program(
-            VertexShader("glsl/copy_vertex.glsl"),
-            FragmentShader("glsl/copy_fragment.glsl")
+            VertexShader(local / "glsl/copy_vertex.glsl"),
+            FragmentShader(local / "glsl/copy_fragment.glsl")
         )
 
-        self.suzanne = ObjMesh("obj/suzanne.obj")
+        self.suzanne = ObjMesh(local / "obj/suzanne.obj")
 
         self.vao = VertexArrayObject()
 
