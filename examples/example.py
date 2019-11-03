@@ -37,8 +37,8 @@ class UglyWindow(pyglet.window.Window):
             FragmentShader(local / "glsl/copy_fragment.glsl")
         )
 
+        # Load a texture
         size, image = load_png(local / "textures/plasma.png")
-        # print(list(chain.from_iterable(image)))
         texture = ImageTexture(image, size, unit=3)
 
         # Load vertex data from an OBJ file as a "mesh"
@@ -72,7 +72,7 @@ class UglyWindow(pyglet.window.Window):
         with self.offscreen_buffer, self.view_program, \
              enabled(gl.GL_DEPTH_TEST), disabled(gl.GL_CULL_FACE):
 
-            # Calculate our view matrix
+            # Calculate a view frustum; this is basically our camera.
             near = 0.1
             far = 15
             width = 0.05
@@ -83,18 +83,20 @@ class UglyWindow(pyglet.window.Window):
                 0, 0, -(far + near)/(far - near), -1,
                 0, 0, -2 * far * near/(far - near), 0
             ))
+
+            # First we'll draw our OBJ model
             view_matrix = (Matrix4
                            .new_scale(1, 1, 1)
                            .translate(0, 0, -8)
                            .rotatex(-math.pi/2)
                            .rotatez(time()))  # Rotate over time
-            # Set matrix uniform
+            # Send the matrix to GL
             gl.glUniformMatrix4fv(0, 1, gl.GL_FALSE,
                                   gl_matrix(frustum * view_matrix))
             gl.glUniform4f(1, 0.3, 0.3, 1, 1)  # Set the "color" uniform to blue
-            # Render a model
             self.suzanne.draw()
 
+            # We'll also draw a plane which is stationary
             view_matrix = (Matrix4
                            .new_scale(1, 1, 1)
                            .translate(0, 0, -8))
