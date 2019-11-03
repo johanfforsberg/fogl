@@ -1,5 +1,4 @@
 import logging
-from itertools import chain
 import math
 from time import time
 from pathlib import Path
@@ -7,7 +6,6 @@ from pathlib import Path
 import pyglet
 from pyglet import gl
 from euclid3 import Matrix4
-import png
 
 from ugly.framebuffer import FrameBuffer
 from ugly.glutil import gl_matrix, load_png
@@ -39,7 +37,7 @@ class UglyWindow(pyglet.window.Window):
             FragmentShader(local / "glsl/copy_fragment.glsl")
         )
 
-        size, image = load_png(str(local / "textures/face.png"))
+        size, image = load_png(local / "textures/plasma.png")
         # print(list(chain.from_iterable(image)))
         texture = ImageTexture(image, size, unit=3)
 
@@ -89,11 +87,11 @@ class UglyWindow(pyglet.window.Window):
                            .new_scale(1, 1, 1)
                            .translate(0, 0, -8)
                            .rotatex(-math.pi/2)
-                           .rotatez(time() * 10))
+                           .rotatez(time()))  # Rotate over time
             # Set matrix uniform
             gl.glUniformMatrix4fv(0, 1, gl.GL_FALSE,
                                   gl_matrix(frustum * view_matrix))
-
+            gl.glUniform4f(1, 0.3, 0.3, 1, 1)  # Set the "color" uniform to blue
             # Render a model
             self.suzanne.draw()
 
@@ -103,6 +101,7 @@ class UglyWindow(pyglet.window.Window):
             model_matrix = Matrix4.new_rotatex(-.5).rotatey(2.5).translate(0, 0, 2)
             gl.glUniformMatrix4fv(0, 1, gl.GL_FALSE,
                                   gl_matrix(frustum * view_matrix * model_matrix))
+            gl.glUniform4f(1, 0.3, 1, 0.3, 1)  # Set the "color" uniform to green
             self.plane.draw(mode=gl.GL_TRIANGLE_STRIP)
 
         # Now copy the offscreen buffer to the window's buffer
