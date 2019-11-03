@@ -18,9 +18,10 @@ class FrameBuffer:
     use in shaders.
     """
 
-    def __init__(self, size, depth_unit=4):
+    def __init__(self, size, depth_unit=4, autoclear=False):
         self.name = gl.GLuint()
         self.size = w, h = size
+        self.autoclear = autoclear
 
         gl.glCreateFramebuffers(1, byref(self.name))
         gl.glBindFramebuffer(gl.GL_FRAMEBUFFER, self.name)
@@ -51,6 +52,8 @@ class FrameBuffer:
 
     def __enter__(self):
         gl.glBindFramebuffer(gl.GL_FRAMEBUFFER, self.name)
+        if self.autoclear:
+            self.clear()
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         gl.glBindFramebuffer(gl.GL_FRAMEBUFFER, 0)
