@@ -10,5 +10,5 @@ in VS_OUT {
 out vec4 color;
 
 void main(void) {
-  color = texture(normalTex, fs_in.texcoord);
+  color = texture(colorTex, fs_in.texcoord);
 }

@@ -1,6 +1,7 @@
 #version 450 core
 
-layout (location = 1) uniform vec4 color = vec4(1, 1, 0, 1);
+layout (binding = 3) uniform sampler2D colorTex;
+layout (location = 1) uniform vec4 color = vec4(1, 0.5, 0, 1);
 
 in VS_OUT {
   vec4 color;
@@ -14,6 +15,6 @@ layout (location = 1) out vec4 normal_out;
 
 
 void main(void) {
-  color_out = fs_in.color * color;
+  color_out = fs_in.color * color * texture(colorTex, fs_in.texcoord);
   normal_out = fs_in.normal;
 }

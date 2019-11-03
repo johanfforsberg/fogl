@@ -1,4 +1,5 @@
 import logging
+from itertools import chain
 import math
 from time import time
 from pathlib import Path
@@ -6,11 +7,13 @@ from pathlib import Path
 import pyglet
 from pyglet import gl
 from euclid3 import Matrix4
+import png
 
 from ugly.framebuffer import FrameBuffer
-from ugly.glutil import gl_matrix
-from ugly.mesh import ObjMesh
+from ugly.glutil import gl_matrix, load_png
+from ugly.mesh import ObjMesh, Mesh
 from ugly.shader import Program, VertexShader, FragmentShader
+from ugly.texture import ImageTexture
 from ugly.util import try_except_log
 from ugly.vao import VertexArrayObject
 from ugly.util import enabled, disabled
@@ -36,8 +39,23 @@ class UglyWindow(pyglet.window.Window):
             FragmentShader(local / "glsl/copy_fragment.glsl")
         )
 
-        # Load vertex data from an OBJ file into a "mesh"
-        self.suzanne = ObjMesh(local / "obj/suzanne.obj")
+        size, image = load_png(str(local / "textures/face.png"))
+        # print(list(chain.from_iterable(image)))
+        texture = ImageTexture(image, size, unit=3)
+
+        # Load vertex data from an OBJ file as a "mesh"
+        self.suzanne = ObjMesh(local / "obj/suzanne.obj", texture=texture)
+
+        # A simple plane
+        self.plane = Mesh([
+
+            # position        color          normal          texture coord
+            ((1., 1., 0.),    (1., 1., 1.),  (0., 0., -1.),  (1., 1., 1.)),
+            ((-1., 1., 0.),   (1., 1., 1.),  (0., 0., 1.),   (0., 1., 1.)),
+            ((1., -1., 0.),   (1., 1., 1.),  (0., 0., -1.),  (1., 0., 1.)),
+            ((-1., -1., 0.),  (1., 1., 1.),  (0., 0., -1.),  (0., 0., 1.)),
+
+        ], texture=texture)
 
         self.vao = VertexArrayObject()
 
@@ -53,13 +71,14 @@ class UglyWindow(pyglet.window.Window):
         aspect = h / w
 
         # Render to an offscreen buffer
-        with self.offscreen_buffer, self.view_program, enabled(gl.GL_DEPTH_TEST):
+        with self.offscreen_buffer, self.view_program, \
+             enabled(gl.GL_DEPTH_TEST), disabled(gl.GL_CULL_FACE):
 
             # Calculate our view matrix
             near = 0.1
-            far = 10
-            width = 0.1
-            height = 0.1 * aspect
+            far = 15
+            width = 0.05
+            height = 0.05 * aspect
             frustum = (Matrix4.new(
                 near / width, 0, 0, 0,
                 0, near / height, 0, 0,
@@ -68,15 +87,23 @@ class UglyWindow(pyglet.window.Window):
             ))
             view_matrix = (Matrix4
                            .new_scale(1, 1, 1)
-                           .translate(0, 0, -5)
+                           .translate(0, 0, -8)
                            .rotatex(-math.pi/2)
-                           .rotatez(time()))
+                           .rotatez(time() * 10))
             # Set matrix uniform
             gl.glUniformMatrix4fv(0, 1, gl.GL_FALSE,
                                   gl_matrix(frustum * view_matrix))
 
             # Render a model
             self.suzanne.draw()
+
+            view_matrix = (Matrix4
+                           .new_scale(1, 1, 1)
+                           .translate(0, 0, -8))
+            model_matrix = Matrix4.new_rotatex(-.5).rotatey(2.5).translate(0, 0, 2)
+            gl.glUniformMatrix4fv(0, 1, gl.GL_FALSE,
+                                  gl_matrix(frustum * view_matrix * model_matrix))
+            self.plane.draw(mode=gl.GL_TRIANGLE_STRIP)
 
         # Now copy the offscreen buffer to the window's buffer
         with self.vao, self.copy_program, disabled(gl.GL_CULL_FACE, gl.GL_DEPTH_TEST):
@@ -88,7 +115,7 @@ class UglyWindow(pyglet.window.Window):
 
 if __name__ == "__main__":
 
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.DEBUG)
 
     config = pyglet.gl.Config(major_version=4,
                               minor_version=5,

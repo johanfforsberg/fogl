@@ -40,14 +40,17 @@ class Vertices(LoggerMixin):
     ]
 
     _structure = build_structure(_fields)
+    size = sizeof(_structure)
 
-    def __init__(self, vao, data):
+    def __init__(self, vao, data, indices=None):
         self.vao = vao
         self.data = data
         with vao:
             self.vertex_buffer = Buffer(data, self._structure)
-            self.index_buffer = IndexBuffer(range(len(self.data)))
-        self.size = sizeof(self._structure)
+            if indices:
+                self.index_buffer = IndexBuffer(indices)
+            else:
+                self.index_buffer = IndexBuffer(range(len(self.data)))
 
         offset = 0
         for i, (name, type_, n_elements) in enumerate(self._fields):

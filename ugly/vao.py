@@ -23,4 +23,5 @@ class VertexArrayObject:
         gl.glBindVertexArray(0)
 
     def create_vertices(self, data):
+        "Just a convenience."
         return Vertices(self, data)

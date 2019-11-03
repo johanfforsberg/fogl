@@ -14,6 +14,10 @@ class MeshData:
 
 class Mesh:
 
+    """
+    A mesh is just a convenience for drawing vertices.
+    """
+
     def __init__(self, data, texture=None):
         self.data = data
         self.texture = texture
@@ -22,19 +26,17 @@ class Mesh:
 
     def __enter__(self):
         self.vao.__enter__()
-        self.texture and self.texture.__enter__()
+        if self.texture:
+            self.texture.__enter__()
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self.texture and self.texture.__exit__(exc_type, exc_val, exc_tb)
+        if self.texture:
+            self.texture.__exit__(exc_type, exc_val, exc_tb)
         self.vao.__exit__(exc_type, exc_val, exc_tb)
 
     def draw(self, **kwargs):
-        if self.texture:
-            with self.vao, self.texture:
-                self.vertices.draw(**kwargs)
-        else:
-            with self.vao:
-                self.vertices.draw(**kwargs)
+        with self:
+            self.vertices.draw(**kwargs)
 
     def __repr__(self):
         return f"Mesh(length={len(self.data)})"
@@ -45,4 +47,5 @@ class ObjMesh(Mesh):
     def __init__(self, path, texture=None):
         with open(path) as f:
             data = parse_obj_file(f)
+
         super().__init__(data, texture)

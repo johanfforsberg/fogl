@@ -71,9 +71,10 @@ class DepthTexture(Texture):
 
 class ImageTexture:
 
-    def __init__(self, image, size, atlas=None):
+    def __init__(self, image, size, unit=0, atlas=None):
         self.image = image
         self.size = size
+        self.unit = unit
         self.atlas = atlas
         self._setup()
 
@@ -90,7 +91,7 @@ class ImageTexture:
             gl.GL_RGBA,
             gl.GL_UNSIGNED_BYTE,
             #texture_image
-            (gl.GLchar * (4 * w * h))(*chain.from_iterable(self.image))
+            (gl.GLchar * (4 * w * h))(*self.image)
         )
         gl.glTextureParameteri(self.name,
                                gl.GL_TEXTURE_MAG_FILTER,
@@ -113,10 +114,12 @@ class ImageTexture:
         return self.atlas[key]
 
     def __enter__(self):
+        gl.glActiveTexture(gl.GL_TEXTURE0 + self.unit)
         gl.glBindTexture(gl.GL_TEXTURE_2D, self.name)
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         gl.glBindTexture(gl.GL_TEXTURE_2D, 0)
+        gl.glActiveTexture(gl.GL_TEXTURE0)
 
 
 class CubeMap:
