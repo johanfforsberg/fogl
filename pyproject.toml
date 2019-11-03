@@ -6,10 +6,9 @@ authors = ["Johan Forsberg <johan@slentrian.org>"]
 
 [tool.poetry.dependencies]
 python = "^3.6"
-pyglet = {path = "/home/jofo/bygg/pyglet"}
+pyglet = {path = "pyglet"}
 euclid3 = "^0.1.0"
 pypng = "^0.0.20"
-
 [tool.poetry.dev-dependencies]
 
 [build-system]
