@@ -13,13 +13,20 @@ from ugly.mesh import ObjMesh
 from ugly.shader import Program, VertexShader, FragmentShader
 from ugly.util import try_except_log
 from ugly.vao import VertexArrayObject
+from ugly.util import enabled, disabled
 
 
 class UglyWindow(pyglet.window.Window):
 
+    """
+    Pyglet window subclass that draws an ugly scene every frame.
+    """
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         local = Path(__file__).parent
+
+        # Shader setup
         self.view_program = Program(
             VertexShader(local / "glsl/view_vertex.glsl"),
             FragmentShader(local / "glsl/view_fragment.glsl")
@@ -29,13 +36,14 @@ class UglyWindow(pyglet.window.Window):
             FragmentShader(local / "glsl/copy_fragment.glsl")
         )
 
+        # Load vertex data from an OBJ file into a "mesh"
         self.suzanne = ObjMesh(local / "obj/suzanne.obj")
 
         self.vao = VertexArrayObject()
 
     def on_resize(self, width, height):
         self.size = width, height
-        self.offscreen_buffer = FrameBuffer(self.size)
+        self.offscreen_buffer = FrameBuffer(self.size, autoclear=True)
         return pyglet.event.EVENT_HANDLED  # Work around pyglet internals
 
     @try_except_log
@@ -44,14 +52,10 @@ class UglyWindow(pyglet.window.Window):
         w, h = self.size
         aspect = h / w
 
-        gl.glDisable(gl.GL_BLEND)
-        gl.glEnable(gl.GL_DEPTH_TEST)
-        gl.glDisable(gl.GL_CULL_FACE)
-
         # Render to an offscreen buffer
-        with self.view_program, self.offscreen_buffer:
+        with self.offscreen_buffer, self.view_program, enabled(gl.GL_DEPTH_TEST):
 
-            # Setup our matrix
+            # Calculate our view matrix
             near = 0.1
             far = 10
             width = 0.1
@@ -67,15 +71,16 @@ class UglyWindow(pyglet.window.Window):
                            .translate(0, 0, -5)
                            .rotatex(-math.pi/2)
                            .rotatez(time()))
+            # Send the matrix to GL
             gl.glUniformMatrix4fv(0, 1, gl.GL_FALSE,
                                   gl_matrix(frustum * view_matrix))
 
             # Render a model
-            self.offscreen_buffer.clear()
             self.suzanne.draw()
 
         # Now copy the offscreen buffer to the window's buffer
-        with self.vao, self.copy_program:
+        with self.vao, self.copy_program, disabled(gl.GL_CULL_FACE, gl.GL_DEPTH_TEST):
+            # Bind some of the offscreen buffer's textures so the shader can read them.
             with self.offscreen_buffer.color_texture, \
                  self.offscreen_buffer.normal_texture:
                 gl.glDrawArrays(gl.GL_TRIANGLES, 0, 6)
