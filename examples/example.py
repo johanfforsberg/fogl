@@ -71,7 +71,7 @@ class UglyWindow(pyglet.window.Window):
                            .translate(0, 0, -5)
                            .rotatex(-math.pi/2)
                            .rotatez(time()))
-            # Send the matrix to GL
+            # Set matrix uniform
             gl.glUniformMatrix4fv(0, 1, gl.GL_FALSE,
                                   gl_matrix(frustum * view_matrix))
 
