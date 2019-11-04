@@ -11,7 +11,7 @@ from ugly.framebuffer import FrameBuffer
 from ugly.glutil import gl_matrix, load_png
 from ugly.mesh import ObjMesh, Mesh
 from ugly.shader import Program, VertexShader, FragmentShader
-from ugly.texture import ImageTexture
+from ugly.texture import ImageTexture, Texture, NormalTexture
 from ugly.util import try_except_log
 from ugly.vao import VertexArrayObject
 from ugly.util import enabled, disabled
@@ -59,7 +59,12 @@ class UglyWindow(pyglet.window.Window):
 
     def on_resize(self, width, height):
         self.size = width, height
-        self.offscreen_buffer = FrameBuffer(self.size, autoclear=True)
+        render_textures = dict(
+            color=Texture(self.size, unit=0),
+            normal=NormalTexture(self.size, unit=1),
+            position=NormalTexture(self.size, unit=2),
+        )
+        self.offscreen_buffer = FrameBuffer(self.size, render_textures, autoclear=True)
         return pyglet.event.EVENT_HANDLED  # Work around pyglet internals
 
     @try_except_log
@@ -109,8 +114,7 @@ class UglyWindow(pyglet.window.Window):
         # Now copy the offscreen buffer to the window's buffer
         with self.vao, self.copy_program, disabled(gl.GL_CULL_FACE, gl.GL_DEPTH_TEST):
             # Bind some of the offscreen buffer's textures so the shader can read them.
-            with self.offscreen_buffer.color_texture, \
-                 self.offscreen_buffer.normal_texture:
+            with self.offscreen_buffer.textures["color"]:
                 gl.glDrawArrays(gl.GL_TRIANGLES, 0, 6)
 
 

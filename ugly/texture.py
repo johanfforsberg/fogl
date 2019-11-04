@@ -90,7 +90,6 @@ class ImageTexture:
             w, h,
             gl.GL_RGBA,
             gl.GL_UNSIGNED_BYTE,
-            #texture_image
             (gl.GLchar * (4 * w * h))(*self.image)
         )
         gl.glTextureParameteri(self.name,
