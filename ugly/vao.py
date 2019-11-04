@@ -12,8 +12,9 @@ class VertexArrayObject:
     vertex buffers and related settings.
     """
 
-    def __init__(self):
+    def __init__(self, vertices_class=Vertices):
         self.name = gl.GLuint()
+        self.vertices_class = vertices_class
         gl.glCreateVertexArrays(1, byref(self.name))
 
     def __enter__(self):
@@ -24,4 +25,4 @@ class VertexArrayObject:
 
     def create_vertices(self, data):
         "Just a convenience."
-        return Vertices(self, data)
+        return self.vertices_class(self, data)
