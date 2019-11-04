@@ -11,11 +11,9 @@ Ugly is *not*, nor does it want to be, any of these things:
 * An opinionated library that helps you (or forces you to) structure your entire codebase.
 * Really much of a stand alone library; one reasonable way to use it might be to incorporate the parts you like into your own code and customize it as needed. Or subclass the existing classes for your needs.
 
-It does not attempt to cover the entire OpenGL API and every possible use case. It does pretty much only what I need, in the way I like, and tries to be as simple as possible while being reasonably flexible and not get in the way. It should be pretty easy to extend as needed.
+It does not attempt to cover the entire OpenGL API and every possible use case. It does pretty much only what I need, in the way I like, and tries to be as simple as possible while being reasonably flexible and not get in the way. It should be pretty easy to extend though.
 
-Ugly currently assumes you're able to run at least OpenGL 4.5. This is mostly because of laziness; ugly was written with the help of the (excellent) "OpenGL Superbible", 7th ed. which relies on modern GL idioms. ugly also requires at least python 3.6.
-
-Note: The dependency on pyglet does not mean that you necessarily have to build your entire application around pyglet. ugly only uses the GL wrapper part of pyglet and should work with any other library that can coexist with pyglet, e.g. glfw.
+The dependency on pyglet does not mean that you necessarily have to build your entire application around pyglet. ugly only uses the GL wrapper part of pyglet and should work with any other library that can coexist with pyglet, e.g. glfw.
 
 Disclaimer: I'm not an OpenGL expert. Ugly is simply the result of numerous rewrites while trying to get some game code to make sense. Finally I broke the core of it out into a separate package, to be able to use it in several projects. It works for what I'm doing but I'd be happy if it turned out to be useful to others. If you find bugs or have any ideas about improvements feel free to file issues or pull requests.
 
@@ -34,6 +32,8 @@ Drawing a mesh is simply done by calling the "draw" method on it.
 
 Prerequisites
 =============
+
+Ugly currently assumes you're able to run at least OpenGL 4.5. This is mostly because of laziness; ugly was written with the help of the (excellent) "OpenGL Superbible", 7th ed. which relies on modern GL idioms. It may mean it won't work on older hardware. ugly also requires at least python 3.6.
 
 At the time of writing, Pyglet needs a few tweaks in order to work with the latest version of OpenGL. There's a shell script in `bin/get_pyglet.sh` that should download the latest version of pyglet and do some patching necessary to get it to support recent version of OpenGL. 
 
