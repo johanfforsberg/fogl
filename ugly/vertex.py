@@ -17,6 +17,7 @@ gltypes = {
     gl.GL_INT: gl.GLint,
     gl.GL_BYTE: gl.GLbyte,
     gl.GL_UNSIGNED_BYTE: gl.GLubyte
+    # ...
 }
 
 
@@ -32,19 +33,17 @@ def build_structure(fields):
 class Vertices(LoggerMixin):
 
     _fields = [
-        # (name, type, size)
-        ('position', gl.GL_FLOAT, 3),
-        ('color', gl.GL_FLOAT, 3),
-        ('normal', gl.GL_FLOAT, 3),
-        ('texture', gl.GL_FLOAT, 3)
+        # The internal structure of each vertex
+        # Should be a list of tuples (name, gltype, n_elements)
     ]
-
-    _structure = build_structure(_fields)
-    size = sizeof(_structure)
 
     def __init__(self, vao, data, indices=None):
         self.vao = vao
         self.data = data
+
+        self._structure = build_structure(self._fields)
+        self.size = sizeof(self._structure)
+
         with vao:
             self.vertex_buffer = Buffer(data, self._structure)
             if indices:
@@ -86,3 +85,15 @@ class Vertices(LoggerMixin):
         else:
             with self.index_buffer:
                 gl.glDrawElements(mode, self.length, gl.GL_UNSIGNED_INT, 0)
+
+
+class ObjVertices(Vertices):
+
+    """Vertices for storing OBJ (-like) data."""
+
+    _fields = [
+        ('position', gl.GL_FLOAT, 3),
+        ('color', gl.GL_FLOAT, 3),
+        ('normal', gl.GL_FLOAT, 3),
+        ('texture', gl.GL_FLOAT, 3)
+    ]

@@ -59,7 +59,11 @@ class UglyWindow(pyglet.window.Window):
 
     def on_resize(self, width, height):
         self.size = width, height
+        # We need to recreate the offscreen buffer if the window size changes
+        # This includes when the window is first created.
         render_textures = dict(
+            # These will represent the different channels of the framebuffer,
+            # that the shader can render to.
             color=Texture(self.size, unit=0),
             normal=NormalTexture(self.size, unit=1),
             position=NormalTexture(self.size, unit=2),
@@ -114,7 +118,7 @@ class UglyWindow(pyglet.window.Window):
         # Now copy the offscreen buffer to the window's buffer
         with self.vao, self.copy_program, disabled(gl.GL_CULL_FACE, gl.GL_DEPTH_TEST):
             # Bind some of the offscreen buffer's textures so the shader can read them.
-            with self.offscreen_buffer.textures["color"]:
+            with self.offscreen_buffer["color"], self.offscreen_buffer["normal"]:
                 gl.glDrawArrays(gl.GL_TRIANGLES, 0, 6)
 
 

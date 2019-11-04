@@ -60,6 +60,10 @@ class FrameBuffer:
     def __exit__(self, exc_type, exc_val, exc_tb):
         gl.glBindFramebuffer(gl.GL_FRAMEBUFFER, 0)
 
+    def __getitem__(self, texture_name):
+        "Let textures be accessed as items, by name."
+        return self.textures[texture_name]
+
     def clear(self):
         for index in range(len(self.textures)):
             gl.glClearBufferfv(gl.GL_COLOR, index, black)
