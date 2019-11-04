@@ -17,6 +17,11 @@ class FrameBuffer:
     geometry and material information per pixel. It can contain separate textures
     e.g. for color and normal, bound to different units so that they can
     all be used from shaders at the same time.
+
+    Requires a size and a mapping of names to textures. The textures will be
+    the "channels" of the framebuffer. They should probably have the same size
+    as the framebuffer or there will be trouble. Also they must use different
+    units.
     """
 
     def __init__(self, size: Tuple[int, int], textures: Dict[str, Texture],
@@ -32,13 +37,16 @@ class FrameBuffer:
         # Create textures that we can use to read the results.
         self.textures = {}
         draw_attachments = []
-        for index, (name, texture) in enumerate(textures.items()):
+        max_unit = 0
+        for name, texture in textures.items():
             self.textures[name] = texture
-            gl.glFramebufferTexture(gl.GL_FRAMEBUFFER, gl.GL_COLOR_ATTACHMENT0 + index, texture.name, 0)
-            draw_attachments.append(gl.GL_COLOR_ATTACHMENT0 + index)
+            attachment = gl.GL_COLOR_ATTACHMENT0 + texture.unit
+            gl.glFramebufferTexture(gl.GL_FRAMEBUFFER, attachment, texture.name, 0)
+            draw_attachments.append(attachment)
+            max_unit = max(max_unit, texture.unit)
 
         # Setup a depth buffer (presumably we always want that)
-        depth_unit = depth_unit if depth_unit is not None else len(textures)
+        depth_unit = depth_unit if depth_unit is not None else max_unit + 1
         self.textures["depth"] = depth_texture = DepthTexture(self.size, unit=depth_unit)
         gl.glFramebufferTexture(gl.GL_FRAMEBUFFER, gl.GL_DEPTH_ATTACHMENT, depth_texture.name, 0)
 
