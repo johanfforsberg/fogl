@@ -87,6 +87,13 @@ class Vertices(LoggerMixin):
                 gl.glDrawElements(mode, self.length, gl.GL_UNSIGNED_INT, 0)
 
 
+class SimpleVertices(Vertices):
+
+    _fields = [
+        ('position', gl.GL_FLOAT, 3),
+    ]
+
+
 class ObjVertices(Vertices):
 
     """Vertices for storing OBJ (-like) data."""

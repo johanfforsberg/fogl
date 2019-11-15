@@ -38,8 +38,7 @@ class UglyWindow(pyglet.window.Window):
         )
 
         # Load a texture
-        size, image = load_png(local / "textures/plasma.png")
-        texture = ImageTexture(image, size, unit=3)
+        texture = ImageTexture(*load_png(local / "textures/plasma.png"), unit=3)
 
         # Load vertex data from an OBJ file as a "mesh"
         self.suzanne = ObjMesh(local / "obj/suzanne.obj", texture=texture)

@@ -71,9 +71,9 @@ class DepthTexture(Texture):
 
 class ImageTexture:
 
-    def __init__(self, image, size, unit=0, atlas=None):
-        self.image = image
+    def __init__(self, size, image, unit=0, atlas=None):
         self.size = size
+        self.image = image
         self.unit = unit
         self.atlas = atlas
         self._setup()
