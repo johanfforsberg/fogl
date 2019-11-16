@@ -11,11 +11,11 @@ Fogl is *not*, nor does it want to be, any of these things:
 * An opinionated library that helps you (or forces you to) structure your entire codebase.
 * Really much of a stand alone library; one reasonable way to use it might be to incorporate the parts you like into your own code and customize it as needed. Or subclass the existing classes for your needs.
 
-It does not attempt to cover the entire OpenGL API and every possible use case. Instead it does pretty much only what I need, in the way I like, and tries to be as simple as possible while being reasonably flexible and not get in the way. Hopefully it's pretty easy to extend, though.
+It does not attempt to cover the entire OpenGL API and every possible use case. Instead it does pretty much only what I need, in the way I like, and tries not to get in the way. Hopefully it's pretty easy to extend, though.
 
 The dependency on pyglet does not mean that you necessarily have to build your entire application around pyglet. Fogl only uses the GL wrapper part of pyglet and should work with any other library that can coexist with pyglet, e.g. glfw.
 
-Disclaimer: I'm not an OpenGL expert. Fogl is simply the result of numerous rewrites while trying to get some game code to make sense. Finally I broke it out into a separate package, to be able to use it in several projects. It works for what I'm doing but I'd be happy if it turned out to be useful to others. If you find bugs or have any ideas about improvements feel free to file issues or pull requests.
+Disclaimer: I'm not an OpenGL expert. Fogl is simply the result of numerous rewrites while trying to get some game code to make sense. Finally I broke it out into a separate package, to be able to use it in several projects. It works for what I'm doing but I'd be happy if it turned out to be useful to anyone else. If you find bugs or have any ideas about improvements feel free to file issues or pull requests.
 
 
 Usage
