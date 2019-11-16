@@ -41,6 +41,7 @@ class FoglWindow(pyglet.window.Window):
         texture = ImageTexture(*load_png(local / "textures/plasma.png"), unit=3)
 
         # Load vertex data from an OBJ file as a "mesh"
+        # OBJ file belongs to the Blender project.
         self.suzanne = ObjMesh(local / "obj/suzanne.obj", texture=texture)
 
         # A simple plane
