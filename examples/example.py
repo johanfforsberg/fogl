@@ -7,17 +7,17 @@ import pyglet
 from pyglet import gl
 from euclid3 import Matrix4
 
-from ugly.framebuffer import FrameBuffer
-from ugly.glutil import gl_matrix, load_png
-from ugly.mesh import ObjMesh, Mesh
-from ugly.shader import Program, VertexShader, FragmentShader
-from ugly.texture import ImageTexture, Texture, NormalTexture
-from ugly.util import try_except_log
-from ugly.vao import VertexArrayObject
-from ugly.util import enabled, disabled
+from fogl.framebuffer import FrameBuffer
+from fogl.glutil import gl_matrix, load_png
+from fogl.mesh import ObjMesh, Mesh
+from fogl.shader import Program, VertexShader, FragmentShader
+from fogl.texture import ImageTexture, Texture, NormalTexture
+from fogl.util import try_except_log
+from fogl.vao import VertexArrayObject
+from fogl.util import enabled, disabled
 
 
-class UglyWindow(pyglet.window.Window):
+class FoglWindow(pyglet.window.Window):
 
     """
     Pyglet window subclass that draws an ugly scene every frame.
@@ -135,7 +135,7 @@ if __name__ == "__main__":
     pyglet.options['debug_gl_trace_args'] = DEBUG_GL
     pyglet.options['debug_x11'] = DEBUG_GL
 
-    w = UglyWindow(config=config)
+    w = FoglWindow(config=config)
 
     pyglet.clock.schedule_interval(lambda dt: None, 0.01)
 

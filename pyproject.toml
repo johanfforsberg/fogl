@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "ugly"
+name = "fogl"
 version = "0.1.0"
 description = "A collection of convenient wrappers for OpenGL."
 authors = ["Johan Forsberg <johan@slentrian.org>"]
