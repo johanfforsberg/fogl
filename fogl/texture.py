@@ -3,7 +3,6 @@ Functionality related to textures.
 """
 
 from ctypes import byref
-from itertools import chain
 from math import pi, sqrt
 
 from euclid3 import Matrix4
@@ -12,29 +11,28 @@ from pyglet import gl
 from .glutil import gl_matrix
 
 
+# The default texture parameters.
+DEFAULT_PARAMS = dict([
+    (gl.GL_TEXTURE_MIN_FILTER, gl.GL_NEAREST),
+    (gl.GL_TEXTURE_MAG_FILTER, gl.GL_NEAREST),
+    (gl.GL_TEXTURE_WRAP_S, gl.GL_CLAMP_TO_BORDER),
+    (gl.GL_TEXTURE_WRAP_T, gl.GL_CLAMP_TO_BORDER)
+])
+
+
 class Texture:
 
     _type = gl.GL_RGBA8
 
-    def __init__(self, size, unit=0):
+    def __init__(self, size, unit=0, params={}):
         self.size = size
         self.unit = unit
         w, h = size
         self.name = gl.GLuint()
         gl.glCreateTextures(gl.GL_TEXTURE_2D, 1, byref(self.name))
         gl.glTextureStorage2D(self.name, 1, self._type, w, h)
-        gl.glTextureParameteri(self.name,
-                               gl.GL_TEXTURE_MIN_FILTER,
-                               gl.GL_NEAREST)
-        gl.glTextureParameteri(self.name,
-                               gl.GL_TEXTURE_MAG_FILTER,
-                               gl.GL_NEAREST)
-        gl.glTextureParameteri(self.name,
-                               gl.GL_TEXTURE_WRAP_S,
-                               gl.GL_CLAMP_TO_EDGE)
-        gl.glTextureParameteri(self.name,
-                               gl.GL_TEXTURE_WRAP_T,
-                               gl.GL_CLAMP_TO_EDGE)
+        for flag, value in {**DEFAULT_PARAMS, **params}.items():
+            gl.glTextureParameteri(self.name, flag, value)
 
     def __enter__(self):
         gl.glActiveTexture(gl.GL_TEXTURE0 + self.unit)
