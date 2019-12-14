@@ -104,7 +104,7 @@ class ImageTexture:
     def image_coords_to_texture_coords(self, img_coords):
         iw, ih = self.size
         x, y, w, h = img_coords
-        return x/iw, y/ih, w/iw-2, h/ih-2
+        return x/iw, y/ih, w/iw, h/ih
 
     def __getitem__(self, key):
         "Return raw texture atlas coords"
