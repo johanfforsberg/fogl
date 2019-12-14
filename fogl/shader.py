@@ -1,5 +1,6 @@
 from abc import ABCMeta
 from ctypes import cast, pointer, byref, create_string_buffer, POINTER, c_char
+import io
 
 from pyglet import gl
 
@@ -12,10 +13,12 @@ class Shader(LoggerMixin, metaclass=ABCMeta):
     A light wrapper for GL shaders. Loads GLSL code from disk and compiles it.
     """
 
-    def __init__(self, source_file):
+    def __init__(self, source_file=None, source=None):
         self.name = gl.glCreateShader(self.kind)
-        self.source = open(source_file, "rb").read()
-
+        if source_file:
+            self.source = open(source_file, "rb").read()
+        else:
+            self.source = source
         src_buffer = create_string_buffer(self.source)
         buf_pointer = cast(pointer(pointer(src_buffer)), POINTER(POINTER(c_char)))
         gl.glShaderSource(self.name, 1, buf_pointer, None)
