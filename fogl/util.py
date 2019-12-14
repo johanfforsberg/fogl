@@ -1,7 +1,9 @@
 from contextlib import contextmanager
+from itertools import chain
 import logging
 from time import time
 
+import png
 import pyglet
 from pyglet import gl
 
@@ -93,3 +95,14 @@ def disabled(*gl_flags):
     yield
     for f in disabled:
         gl.glEnable(f)
+
+
+def load_png(filename):
+    """
+    An easy way to load a png file as a bunch of bytes,
+    suitable for usage as a texture.
+    """
+    with open(filename, "rb") as f:
+        reader = png.Reader(bytes=f.read())
+        width, height, rows, info = reader.asRGBA()
+        return (width, height), chain.from_iterable(rows)
