@@ -8,11 +8,11 @@ from pyglet import gl
 from euclid3 import Matrix4
 
 from fogl.framebuffer import FrameBuffer
-from fogl.glutil import gl_matrix, load_png
+from fogl.glutil import gl_matrix
 from fogl.mesh import ObjMesh, Mesh
 from fogl.shader import Program, VertexShader, FragmentShader
 from fogl.texture import ImageTexture, Texture, NormalTexture
-from fogl.util import try_except_log
+from fogl.util import try_except_log, load_png
 from fogl.vao import VertexArrayObject
 from fogl.util import enabled, disabled
 
