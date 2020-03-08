@@ -4,6 +4,7 @@ Functionality related to textures.
 
 from ctypes import byref
 from math import pi, sqrt
+from typing import Tuple, Mapping, List
 
 from euclid3 import Matrix4
 from pyglet import gl
@@ -15,8 +16,8 @@ from .glutil import gl_matrix
 DEFAULT_PARAMS = dict([
     (gl.GL_TEXTURE_MIN_FILTER, gl.GL_NEAREST),
     (gl.GL_TEXTURE_MAG_FILTER, gl.GL_NEAREST),
-    (gl.GL_TEXTURE_WRAP_S, gl.GL_CLAMP_TO_BORDER),
-    (gl.GL_TEXTURE_WRAP_T, gl.GL_CLAMP_TO_BORDER)
+    (gl.GL_TEXTURE_WRAP_S, gl.GL_CLAMP_TO_EDGE),
+    (gl.GL_TEXTURE_WRAP_T, gl.GL_CLAMP_TO_EDGE)
 ])
 
 
@@ -24,7 +25,7 @@ class Texture:
 
     _type = gl.GL_RGBA8
 
-    def __init__(self, size, unit=0, params={}):
+    def __init__(self, size: Tuple[int, int], unit: int=0, params: Mapping[int, int]={}):
         self.size = size
         self.unit = unit
         w, h = size
@@ -33,6 +34,7 @@ class Texture:
         gl.glTextureStorage2D(self.name, 1, self._type, w, h)
         for flag, value in {**DEFAULT_PARAMS, **params}.items():
             gl.glTextureParameteri(self.name, flag, value)
+        self.clear()
 
     def __enter__(self):
         gl.glActiveTexture(gl.GL_TEXTURE0 + self.unit)
@@ -48,10 +50,10 @@ class Texture:
 
 class ByteTexture(Texture):
 
-    _type = gl.GL_R8
+    _type = gl.GL_R8UI
 
     def clear(self):
-        gl.glClearTexImage(self.name, 0, gl.GL_RED, gl.GL_UNSIGNED_BYTE, None)
+        gl.glClearTexImage(self.name, 0, gl.GL_RED_INTEGER, gl.GL_UNSIGNED_BYTE, None)
 
 
 class NormalTexture(Texture):
@@ -64,12 +66,16 @@ class DepthTexture(Texture):
     _type = gl.GL_DEPTH_COMPONENT32F
 
     def clear(self):
-        gl.glClearTexImage(self.name, 0, gl.GL_DEPTH, gl.GL_FLOAT, None)  # Correct?
+        # gl.glClearTexImage(self.name, 0, gl.GL_DEPTH, gl.GL_BYTE, None)  # Correct?
+        pass
 
 
 class ImageTexture:
 
-    def __init__(self, size, image, unit=0, atlas=None):
+    "Texture created from an image."
+    
+    def __init__(self, size: Tuple[int, int], image: bytes, unit: int=0,
+                 atlas: Mapping[str, List[float]]=None):
         self.size = size
         self.image = image
         self.unit = unit
@@ -121,6 +127,8 @@ class ImageTexture:
 
 class CubeMap:
 
+    "WIP"
+    
     # program = Program(
     #     VertexShader("copy_vert.glsl"),
     #     FragmentShader("shadow_frag.glsl"),

@@ -2,7 +2,10 @@
 Functionality for handling meshes, e.g. loading obj files.
 """
 
+from typing import List
+
 from .obj import parse_obj_file
+from .texture import Texture
 from .vao import VertexArrayObject
 from .vertex import ObjVertices
 
@@ -13,7 +16,7 @@ class Mesh:
     A mesh is just a convenience for drawing vertices.
     """
 
-    def __init__(self, data, texture=None, vertices_class=ObjVertices):
+    def __init__(self, data: List, texture: Texture=None, vertices_class=ObjVertices):
         self.data = data
         self.texture = texture
         self.vao = VertexArrayObject(vertices_class=vertices_class)
@@ -43,7 +46,7 @@ class ObjMesh(Mesh):
     Loads data from an OBJ (loghtwave) file into a mesh.
     """
 
-    def __init__(self, path, texture):
+    def __init__(self, path: str, texture: Texture):
         with open(path) as f:
             data = parse_obj_file(f)
 

@@ -79,7 +79,7 @@ class FoglWindow(pyglet.window.Window):
 
         # Render to an offscreen buffer
         with self.offscreen_buffer, self.view_program, \
-             enabled(gl.GL_DEPTH_TEST), disabled(gl.GL_CULL_FACE):
+                enabled(gl.GL_DEPTH_TEST), disabled(gl.GL_CULL_FACE):
 
             # Calculate a view frustum; this is basically our camera.
             near = 0.1
@@ -136,7 +136,7 @@ if __name__ == "__main__":
     pyglet.options['debug_gl_trace_args'] = DEBUG_GL
     pyglet.options['debug_x11'] = DEBUG_GL
 
-    w = FoglWindow(config=config)
+    w = FoglWindow(config=config, resizable=True)
 
     pyglet.clock.schedule_interval(lambda dt: None, 0.01)
 

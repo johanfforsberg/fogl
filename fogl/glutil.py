@@ -16,3 +16,10 @@ def get_max_texture_size():
     max_texture_size = gl.GLint()
     gl.glGetIntegerv(gl.GL_MAX_TEXTURE_SIZE, byref(max_texture_size))
     return max_texture_size.value
+
+
+GLTYPE_TO_CTYPE = {
+    gl.GL_FLOAT: gl.GLfloat,
+    gl.GL_BYTE: gl.GLbyte,
+    gl.GL_UNSIGNED_BYTE: gl.GLubyte
+}

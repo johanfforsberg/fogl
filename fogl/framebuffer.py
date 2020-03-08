@@ -1,8 +1,9 @@
-from ctypes import byref
+from ctypes import byref, c_uint
 from pyglet import gl
 from typing import Dict, Tuple
 
 from .texture import Texture, DepthTexture
+from .glutil import GLTYPE_TO_CTYPE
 
 
 black = (gl.GLfloat * 4)(0, 0, 0, 1)
@@ -68,7 +69,7 @@ class FrameBuffer:
     def __exit__(self, exc_type, exc_val, exc_tb):
         gl.glBindFramebuffer(gl.GL_FRAMEBUFFER, 0)
 
-    def __getitem__(self, texture_name):
+    def __getitem__(self, texture_name: str):
         "Let textures be accessed as items, by name."
         return self.textures[texture_name]
 
@@ -77,14 +78,22 @@ class FrameBuffer:
             gl.glClearBufferfv(gl.GL_COLOR, index, black)
         gl.glClearBufferfv(gl.GL_DEPTH, 0, white)
 
-    def read_pixel(self, name, x, y):
+    def read_pixel(self, name: str, x: int, y: int, gl_type=gl.GL_FLOAT):
         """
         This is probably inefficient, but a useful way to find e.g. the scene position
         under the mouse cursor.
         """
-        unit = self.textures[name].unit
+        c_type = GLTYPE_TO_CTYPE[gl_type]
+        texture = self.textures[name]
+        position_value = (c_type * 4)()
         with self:
-            position_value = (gl.GLfloat * 4)()
-            gl.glReadBuffer(gl.GL_COLOR_ATTACHMENT0 + unit)
-            gl.glReadPixels(x, y, 1, 1, gl.GL_RGBA, gl.GL_FLOAT, byref(position_value))
+            gl.glReadBuffer(gl.GL_COLOR_ATTACHMENT0 + texture.unit)
+            gl.glReadPixels(x, y, 1, 1, gl.GL_RGBA, gl_type, byref(position_value))
         return list(position_value)
+
+    def __repr__(self):
+        return f"Framebuffer(name={self.name}, size={self.size})"
+
+    def delete(self):
+        gl.glDeleteFramebuffers(1, (c_uint*1)(self.name))
+            

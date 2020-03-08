@@ -3,6 +3,7 @@ General GL buffer handling
 """
 
 from ctypes import byref, sizeof
+from typing import List
 
 from pyglet import gl
 
@@ -11,7 +12,7 @@ from .util import LoggerMixin
 
 class Buffer(LoggerMixin):
 
-    def __init__(self, data=None, structure=gl.GLfloat, size=0):
+    def __init__(self, data: List=None, structure=gl.GLfloat, size=0):
         self.name = gl.GLuint()
         self.structure = structure
         gl.glCreateBuffers(1, byref(self.name))
@@ -35,7 +36,7 @@ class Buffer(LoggerMixin):
 
 class IndexBuffer(Buffer):
 
-    def __init__(self, data, structure=gl.GLuint):
+    def __init__(self, data: List[int], structure=gl.GLuint):
         self.name = gl.GLuint()
         self.structure = structure
         gl.glGenBuffers(1, byref(self.name))

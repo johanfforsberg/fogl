@@ -13,7 +13,7 @@ class Shader(LoggerMixin, metaclass=ABCMeta):
     A light wrapper for GL shaders. Loads GLSL code from disk and compiles it.
     """
 
-    def __init__(self, source_file=None, source=None):
+    def __init__(self, source_file: str=None, source: str=None):
         self.name = gl.glCreateShader(self.kind)
         if source_file:
             self.source = open(source_file, "rb").read()
@@ -69,7 +69,7 @@ class Program(LoggerMixin):
     vertex shader and a fragment shader. Geometry shader is optional.
     """
 
-    def __init__(self, *shaders):
+    def __init__(self, *shaders: Shader):
         self.name = gl.glCreateProgram()
         for shader in shaders:
             gl.glAttachShader(self.name, shader.name)
@@ -97,5 +97,5 @@ class Program(LoggerMixin):
     def __enter__(self):
         gl.glUseProgram(self.name)
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, *_):
         gl.glUseProgram(0)

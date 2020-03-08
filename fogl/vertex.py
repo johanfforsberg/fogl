@@ -3,7 +3,10 @@ Handling of GL vertex (attribute) data, such as 3D models.
 """
 
 
+from abc import ABCMeta
 from ctypes import Structure, sizeof
+from typing import List, Tuple
+
 from pyglet import gl
 
 from .buffer import Buffer, IndexBuffer
@@ -30,14 +33,14 @@ def build_structure(fields):
     return _structure
 
 
-class Vertices(LoggerMixin):
+class Vertices(LoggerMixin, metaclass=ABCMeta):
 
     _fields = [
         # The internal structure of each vertex
         # Should be a list of tuples (name, gltype, n_elements)
     ]
 
-    def __init__(self, vao, data, indices=None):
+    def __init__(self, vao, data: List[Tuple[Tuple]], indices=None):
         self.vao = vao
         self.data = data
 
