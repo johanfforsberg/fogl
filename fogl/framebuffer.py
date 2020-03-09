@@ -78,6 +78,9 @@ class FrameBuffer:
             gl.glClearBufferfv(gl.GL_COLOR, index, black)
         gl.glClearBufferfv(gl.GL_DEPTH, 0, white)
 
+    def delete(self):
+        gl.glDeleteFramebuffers(1, (c_uint*1)(self.name))
+        
     def read_pixel(self, name: str, x: int, y: int, gl_type=gl.GL_FLOAT):
         """
         This is probably inefficient, but a useful way to find e.g. the scene position
@@ -93,7 +96,4 @@ class FrameBuffer:
 
     def __repr__(self):
         return f"Framebuffer(name={self.name}, size={self.size})"
-
-    def delete(self):
-        gl.glDeleteFramebuffers(1, (c_uint*1)(self.name))
-            
+    

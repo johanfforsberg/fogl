@@ -2,7 +2,7 @@
 General GL buffer handling
 """
 
-from ctypes import byref, sizeof
+from ctypes import byref, sizeof, c_uint
 from typing import List
 
 from pyglet import gl
@@ -33,6 +33,15 @@ class Buffer(LoggerMixin):
         gl.glNamedBufferSubData(self.name, offset, len(data)*sizeof(self.structure),
                                 (self.structure*len(data))(*data))
 
+    def delete(self):
+        try:
+            gl.glDeleteBuffers(1, (c_uint*1)(self.name))
+        except ImportError:
+            pass
+
+    def __del__(self):
+        self.delete()
+        
 
 class IndexBuffer(Buffer):
 

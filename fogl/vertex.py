@@ -7,6 +7,7 @@ from abc import ABCMeta
 from ctypes import Structure, sizeof
 from typing import List, Tuple
 
+from ctypes import Structure, sizeof, c_uint
 from pyglet import gl
 
 from .buffer import Buffer, IndexBuffer
@@ -89,7 +90,14 @@ class Vertices(LoggerMixin, metaclass=ABCMeta):
             with self.index_buffer:
                 gl.glDrawElements(mode, self.length, gl.GL_UNSIGNED_INT, 0)
 
+    def delete(self):
+        self.vertex_buffer.delete()
+        self.index_buffer.delete()
 
+    def __del__(self):
+        self.delete()
+        
+        
 class SimpleVertices(Vertices):
 
     _fields = [

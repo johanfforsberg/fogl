@@ -1,4 +1,5 @@
 from ctypes import byref
+from ctypes import c_uint
 
 from pyglet import gl
 
@@ -26,3 +27,12 @@ class VertexArrayObject:
     def create_vertices(self, data):
         "Just a convenience."
         return self.vertices_class(self, data)
+
+    def delete(self):
+        gl.glDeleteVertexArrays(1, (c_uint*1)(self.name))
+    
+    def __del__(self):
+        try:
+            self.delete()
+        except ImportError:
+            pass

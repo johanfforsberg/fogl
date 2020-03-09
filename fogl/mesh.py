@@ -2,7 +2,10 @@
 Functionality for handling meshes, e.g. loading obj files.
 """
 
+from ctypes import c_uint
 from typing import List
+
+from pyglet import gl
 
 from .obj import parse_obj_file
 from .texture import Texture
@@ -37,8 +40,15 @@ class Mesh:
             self.vertices.draw(**kwargs)
 
     def __repr__(self):
-        return f"Mesh(length={len(self.data)})"
+        return f"Mesh(vao={self.vao}, length={len(self.data)})"
 
+    def __del__(self):
+        try:
+            self.vao.delete()
+            self.vertices.delete()
+        except ImportError:
+            pass
+    
 
 class ObjMesh(Mesh):
 
