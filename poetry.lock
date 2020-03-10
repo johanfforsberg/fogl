@@ -8,7 +8,26 @@ version = "0.01"
 
 [[package]]
 category = "main"
+description = "Cython-based Python bindings for dear imgui"
+name = "imgui"
+optional = false
+python-versions = "*"
+version = "1.1.0"
+
+[package.extras]
+Cython = ["Cython (>=0.24,<=0.28.2)"]
+cocos2d = ["pyopengl", "cocos2d"]
+full = ["Cython (>=0.24,<=0.28.2)", "cocos2d", "glfw", "pyglet", "pysdl2", "pygame", "pyopengl"]
+glfw = ["pyopengl", "glfw"]
+opengl = ["pyopengl"]
+pygame = ["pyopengl", "pygame"]
+pyglet = ["pyopengl", "pyglet"]
+sdl2 = ["pyopengl", "pysdl2"]
+
+[[package]]
+category = "main"
 description = "Cross-platform windowing and multimedia library"
+develop = true
 name = "pyglet"
 optional = false
 python-versions = "*"
@@ -28,10 +47,50 @@ python-versions = "*"
 version = "0.0.20"
 
 [metadata]
-content-hash = "f843a1a232109089422dd6ded03a1b75263bd620d5a6c999a0cb7164aa2cce38"
+content-hash = "278e719481445582414d05f52572e7534a9cb320bbf83807bf2a2f15f327f343"
 python-versions = "^3.6"
 
-[metadata.hashes]
-euclid3 = ["25b827a57adbfd9a3fa8625e43abc3e907f61de622343e7e538482ef9b46fd0b"]
+[metadata.files]
+euclid3 = [
+    {file = "euclid3-0.01.tar.gz", hash = "sha256:25b827a57adbfd9a3fa8625e43abc3e907f61de622343e7e538482ef9b46fd0b"},
+]
+imgui = [
+    {file = "imgui-1.1.0-cp27-cp27m-macosx_10_13_x86_64.whl", hash = "sha256:d21f358271473c70fbb3fd476ba01c3996e930944bb54e0591f2c40a7a237122"},
+    {file = "imgui-1.1.0-cp27-cp27m-manylinux1_i686.whl", hash = "sha256:19c8bd63d333fc4f46020502bcc5235770c5f099efa8419ed12a8d5f78bd66d9"},
+    {file = "imgui-1.1.0-cp27-cp27m-manylinux1_x86_64.whl", hash = "sha256:ea426563e8a12abdf4e65a83e4612937b1a235c5d7ef556e2db4abcb885d3d99"},
+    {file = "imgui-1.1.0-cp27-cp27m-win32.whl", hash = "sha256:248d6306e02ae9ee99c35ac9c023873845aba94127cfd6dbf5cb3040fc97038f"},
+    {file = "imgui-1.1.0-cp27-cp27m-win_amd64.whl", hash = "sha256:d13c59caed00a3c4aabdceb8b4653e26c911f1bc909d4dfdc3fad35319ebfc01"},
+    {file = "imgui-1.1.0-cp27-cp27mu-manylinux1_i686.whl", hash = "sha256:f011801a5be3256b54e001889898368b0b6fc1d54f8df1a11947cfc5701b95d8"},
+    {file = "imgui-1.1.0-cp27-cp27mu-manylinux1_x86_64.whl", hash = "sha256:c6fa478b3ea91163ed4bfaab4e4e682cc2a8c631b177be122957860e1ab51c37"},
+    {file = "imgui-1.1.0-cp33-cp33m-win32.whl", hash = "sha256:847d935d7f03c879836cb513f701a247ae6ff70330bc0a8a9a3ee17a098420cb"},
+    {file = "imgui-1.1.0-cp33-cp33m-win_amd64.whl", hash = "sha256:0399ca3435d97327f5f5f846de6c895551ea41f891686e93a624aeced24029a9"},
+    {file = "imgui-1.1.0-cp34-cp34m-manylinux1_i686.whl", hash = "sha256:c9a3870484e8c6f04186667013b01b40d46c787bac801c188d0eb6bfced4b56c"},
+    {file = "imgui-1.1.0-cp34-cp34m-manylinux1_x86_64.whl", hash = "sha256:f405921a3fd9ef07b792f4118d24c8db658d14e53c8d6866cec12d17c87f3303"},
+    {file = "imgui-1.1.0-cp34-cp34m-win32.whl", hash = "sha256:064be86025ba6b71e203cb4651053e0f18a02a88cabb1ea13294ea16257b27ea"},
+    {file = "imgui-1.1.0-cp34-cp34m-win_amd64.whl", hash = "sha256:b42df71feb1c368b0c73ec62cde28a2d95f427a1b3090f33a1e364fc1c24656f"},
+    {file = "imgui-1.1.0-cp35-cp35m-macosx_10_13_x86_64.whl", hash = "sha256:1027be7f1f94a28f271753c86efb96ad60e5c727444acd22d597b316a5cc3457"},
+    {file = "imgui-1.1.0-cp35-cp35m-manylinux1_i686.whl", hash = "sha256:cc31feb2b8e9b06e35495ebcd346f4f68cb9d0c4acd8a34d19356b2e8b5ac4fc"},
+    {file = "imgui-1.1.0-cp35-cp35m-manylinux1_x86_64.whl", hash = "sha256:442d00d46f5f3304dd5f5e048b44c2d764c85d293ba7817facf90b1528c75d23"},
+    {file = "imgui-1.1.0-cp35-cp35m-win32.whl", hash = "sha256:514c7346dbb4a5af056c8d61bd434e86be3ce5558235437b57bf66adc10b1dde"},
+    {file = "imgui-1.1.0-cp35-cp35m-win_amd64.whl", hash = "sha256:985b3935846af35abc047869d5ac7469d65008687e2f0eb4d65b40fecf089b86"},
+    {file = "imgui-1.1.0-cp36-cp36m-macosx_10_13_x86_64.whl", hash = "sha256:22b70a349207218edb66b01502989f94efbdf6ea26bdb5a007e1be50643cc95f"},
+    {file = "imgui-1.1.0-cp36-cp36m-manylinux1_i686.whl", hash = "sha256:0c00a58a49b66392f2a5c13fee219eed23696bfe8e86861677d4b1fb630e388d"},
+    {file = "imgui-1.1.0-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:f80f2782a4f1aed5043ca24bf6e32f3b1153c688f1e2be5b76f01b83dd98d439"},
+    {file = "imgui-1.1.0-cp36-cp36m-win32.whl", hash = "sha256:49e631848db33bba2183702b1c53a71e9786d45140b007aeff36b06670dc69eb"},
+    {file = "imgui-1.1.0-cp36-cp36m-win_amd64.whl", hash = "sha256:a9da162373ce1088160ce6642bf67bc676b7fdd11889bd8c18bb5faff67e14f6"},
+    {file = "imgui-1.1.0-cp37-cp37m-macosx_10_13_x86_64.whl", hash = "sha256:41a833f9b3cf357a0d276d2eb48855e7f958caea4c2b075dd886c5e998f57908"},
+    {file = "imgui-1.1.0-cp37-cp37m-manylinux1_i686.whl", hash = "sha256:ebd81fee5038fef27f2f443a67e7f30cafcb6b97013184de32739b176ea0e44b"},
+    {file = "imgui-1.1.0-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:7365c48d43c42a4ad8df59cfba0bd05c3709bc35f1cfa7e783b0ee42faf88f9f"},
+    {file = "imgui-1.1.0-cp37-cp37m-win32.whl", hash = "sha256:1c6dc4926785c6f1f6968096eb26612f9464ff9b7e99db9cf4cb366a8930875a"},
+    {file = "imgui-1.1.0-cp37-cp37m-win_amd64.whl", hash = "sha256:d733a5d62e49e3ba576a43fca3f141478875f0cfabc135767d1b4329933358d3"},
+    {file = "imgui-1.1.0-cp38-cp38-macosx_10_13_x86_64.whl", hash = "sha256:cfe90388d5275971b83fa52ac38eb76fd6c7821ce5f5c2a27c73f25d46648539"},
+    {file = "imgui-1.1.0-cp38-cp38-manylinux1_i686.whl", hash = "sha256:f285c945f78ea7a1a6e128946a6c4d7a28211ef3e8eb7086a3784f7168cb9c2b"},
+    {file = "imgui-1.1.0-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:b36a28e8b31379380902e20709014638419b2c791f2a6c0b229a30d45ecc48f8"},
+    {file = "imgui-1.1.0-cp38-cp38-win32.whl", hash = "sha256:c6fbdcff567944f6fe1b5e557acaefcaf0b54243454c5f75682b8296a3e2d883"},
+    {file = "imgui-1.1.0-cp38-cp38-win_amd64.whl", hash = "sha256:7df226af285b5ac1f007306f2c8bd152177b66b515d1ddb3c6939a6741aeca5c"},
+    {file = "imgui-1.1.0.tar.gz", hash = "sha256:cb5115913674b49d23490a3193069b0dc8dbb964387c3662698afb6b1d7eec37"},
+]
 pyglet = []
-pypng = ["1032833440c91bafee38a42c38c02d00431b24c42927feb3e63b104d8550170b"]
+pypng = [
+    {file = "pypng-0.0.20.tar.gz", hash = "sha256:1032833440c91bafee38a42c38c02d00431b24c42927feb3e63b104d8550170b"},
+]
