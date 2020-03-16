@@ -63,12 +63,19 @@ class Vertices(LoggerMixin, metaclass=ABCMeta):
                                          self.vertex_buffer.name,  # data storage
                                          offset,
                                          self.size)  # stride
-            gl.glVertexArrayAttribFormat(vao.name,
-                                         i,  # attr location
-                                         n_elements,  # number of components per vertex e.g. 4 for vec4
-                                         type_,  # type of values
-                                         gl.GL_FALSE,  # normalized to 0..1?
-                                         0)  # stride (0 means automatic)
+            if type_ in {gl.GL_INT, gl.GL_UNSIGNED_BYTE}:  # There should be a better way...
+                gl.glVertexArrayAttribIFormat(vao.name,
+                                              i,  # attr location
+                                              n_elements,  # number of components per vertex e.g. 4 for vec4
+                                              type_,  # type of values
+                                              0)  # stride (0 means automatic)
+            else:
+                gl.glVertexArrayAttribFormat(vao.name,
+                                             i,  # attr location
+                                             n_elements,  # number of components per vertex e.g. 4 for vec4
+                                             type_,  # type of values
+                                             gl.GL_FALSE,  # normalized to 0..1?
+                                             0)  # stride (0 means automatic)
             gl.glVertexArrayAttribBinding(vao.name,
                                           i,  # attrib location
                                           i)  # binding index
