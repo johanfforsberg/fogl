@@ -20,7 +20,8 @@ gltypes = {
     gl.GL_DOUBLE: gl.GLdouble,
     gl.GL_INT: gl.GLint,
     gl.GL_BYTE: gl.GLbyte,
-    gl.GL_UNSIGNED_BYTE: gl.GLubyte
+    gl.GL_UNSIGNED_BYTE: gl.GLubyte,
+    gl.GL_UNSIGNED_INT: gl.GLuint,
     # ...
 }
 
@@ -63,7 +64,7 @@ class Vertices(LoggerMixin, metaclass=ABCMeta):
                                          self.vertex_buffer.name,  # data storage
                                          offset,
                                          self.size)  # stride
-            if type_ in {gl.GL_INT, gl.GL_UNSIGNED_BYTE}:  # There should be a better way...
+            if type_ in {gl.GL_INT, gl.GL_BYTE, gl.GL_UNSIGNED_BYTE, gl.GL_UNSIGNED_INT}:  # There should be a better way...
                 gl.glVertexArrayAttribIFormat(vao.name,
                                               i,  # attr location
                                               n_elements,  # number of components per vertex e.g. 4 for vec4

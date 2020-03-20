@@ -2,9 +2,14 @@
 General GL buffer handling
 """
 
-from ctypes import byref, sizeof, c_uint
+from array import array
+from ctypes import byref, sizeof, c_uint, c_ubyte, cast, c_void_p, memmove, POINTER
 from typing import List
 
+try:
+    import numpy as np
+except ImportError:
+    np = None
 from pyglet import gl
 
 from .util import LoggerMixin
@@ -12,19 +17,21 @@ from .util import LoggerMixin
 
 class Buffer(LoggerMixin):
 
-    def __init__(self, data: List=None, structure=gl.GLfloat, size=0):
+    def __init__(self, data: List=None, structure=gl.GLfloat, size=0, flags=gl.GL_DYNAMIC_STORAGE_BIT):
         self.name = gl.GLuint()
         self.structure = structure
         gl.glCreateBuffers(1, byref(self.name))
-        if size == 0 and data:
+        if size == 0 and len(data):
             length = len(data)
             size = length * sizeof(structure)
         else:
             length = size // sizeof(structure)
         self.length = length
         self.size = size
-        gl.glNamedBufferStorage(self.name, size, (structure*len(data))(*data),
-                                gl.GL_DYNAMIC_STORAGE_BIT)
+        if isinstance(data, list):
+            gl.glNamedBufferStorage(self.name, size, (structure*len(data))(*data), flags)
+        elif np and isinstance(data, np.ndarray):
+            gl.glNamedBufferStorage(self.name, size, data.ctypes.data, flags)            
 
     def __len__(self):
         return self.length
