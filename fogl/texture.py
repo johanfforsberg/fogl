@@ -47,6 +47,15 @@ class Texture:
     def clear(self):
         gl.glClearTexImage(self.name, 0, gl.GL_RGBA, gl.GL_FLOAT, None)
 
+    def __str__(self):
+        return f"Texture(name={self.name.value})"
+
+    def delete(self):
+        gl.glDeleteTextures(1, self.name)
+
+    def __del__(self):
+        self.delete()
+        
 
 class ByteTexture(Texture):
 
@@ -124,6 +133,12 @@ class ImageTexture:
         gl.glBindTexture(gl.GL_TEXTURE_2D, 0)
         gl.glActiveTexture(gl.GL_TEXTURE0)
 
+    def delete(self):
+        gl.glDeleteTextures(1, self.name)
+
+    def __del__(self):
+        self.delete()
+        
 
 class CubeMap:
 
