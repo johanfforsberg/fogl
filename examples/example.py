@@ -1,3 +1,7 @@
+"""
+A simple animated scene that loads from OBJ, uses textures, and does deferred lighting with shadow map.
+"""
+
 import logging
 import math
 from time import time
@@ -21,7 +25,7 @@ from fogl.util import enabled, disabled
 class FoglWindow(pyglet.window.Window):
 
     """
-    Pyglet window subclass that draws an ugly scene every frame.
+    Pyglet window subclass that draws an scene every frame.
     """
 
     def __init__(self, **kwargs):
@@ -57,6 +61,7 @@ class FoglWindow(pyglet.window.Window):
 
         ], texture=texture)
 
+        # A framebuffer for rendering the shadow light. It needs only a depth texture.
         self.shadow_size = 256, 256
         self.shadow_buffer = FrameBuffer(self.shadow_size, autoclear=True, depth_unit=3, set_viewport=True)
         
