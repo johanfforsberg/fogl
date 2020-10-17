@@ -103,8 +103,11 @@ class Vertices(LoggerMixin, metaclass=ABCMeta):
         self.index_buffer.delete()
 
     def __del__(self):
-        self.delete()
-        
+        try:
+            self.delete()
+        except ImportError:
+            pass
+    
         
 class SimpleVertices(Vertices):
 

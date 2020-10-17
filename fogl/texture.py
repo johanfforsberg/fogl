@@ -54,7 +54,10 @@ class Texture:
         gl.glDeleteTextures(1, self.name)
 
     def __del__(self):
-        self.delete()
+        try:
+            self.delete()
+        except ImportError:
+            pass
         
 
 class ByteTexture(Texture):
@@ -182,7 +185,10 @@ class ImageTexture:
         gl.glDeleteTextures(1, self.name)
 
     def __del__(self):
-        self.delete()
+        try:
+            self.delete()
+        except ImportError:
+            pass
         
 
 class CubeMap:

@@ -41,13 +41,13 @@ class Buffer(LoggerMixin):
                                 (self.structure*len(data))(*data))
 
     def delete(self):
-        try:
-            gl.glDeleteBuffers(1, (c_uint*1)(self.name))
-        except ImportError:
-            pass
+        gl.glDeleteBuffers(1, (c_uint*1)(self.name))
 
     def __del__(self):
-        self.delete()
+        try:
+            self.delete()
+        except ImportError:
+            pass
         
 
 class IndexBuffer(Buffer):
