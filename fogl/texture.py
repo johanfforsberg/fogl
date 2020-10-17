@@ -47,6 +47,15 @@ class Texture:
     def clear(self):
         gl.glClearTexImage(self.name, 0, gl.GL_RGBA, gl.GL_FLOAT, None)
 
+    def __str__(self):
+        return f"Texture(name={self.name.value})"
+
+    def delete(self):
+        gl.glDeleteTextures(1, self.name)
+
+    def __del__(self):
+        self.delete()
+        
 
 class ByteTexture(Texture):
 
@@ -82,6 +91,38 @@ class DepthTexture(Texture):
         # gl.glClearTexImage(self.name, 0, gl.GL_DEPTH, gl.GL_BYTE, None)  # Correct?
         pass
 
+
+class Texture3D(Texture):
+
+    _type = gl.GL_RGBA8
+
+    def __init__(self, size: Tuple[int, int, int], unit: int=0, params: Mapping[int, int]={}):
+        self.size = size
+        self.unit = unit
+        w, h, d = size
+        self.name = gl.GLuint()
+        gl.glCreateTextures(gl.GL_TEXTURE_2D_ARRAY, 1, byref(self.name))
+        gl.glTextureStorage3D(self.name, 1, self._type, w, h, d)
+        for flag, value in {**DEFAULT_PARAMS, **params}.items():
+            gl.glTextureParameteri(self.name, flag, value)
+        self.clear()
+
+    def __enter__(self):
+        gl.glActiveTexture(gl.GL_TEXTURE0 + self.unit)
+        gl.glBindTexture(gl.GL_TEXTURE_2D_ARRAY, self.name)
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        gl.glBindTexture(gl.GL_TEXTURE_2D_ARRAY, 0)
+        gl.glActiveTexture(gl.GL_TEXTURE0)
+        
+
+class ByteTexture3D(Texture3D):
+
+    _type = gl.GL_R8UI
+
+    def clear(self):
+        gl.glClearTexImage(self.name, 0, gl.GL_RED_INTEGER, gl.GL_UNSIGNED_BYTE, None)
+    
 
 class ImageTexture:
 
@@ -137,6 +178,12 @@ class ImageTexture:
         gl.glBindTexture(gl.GL_TEXTURE_2D, 0)
         gl.glActiveTexture(gl.GL_TEXTURE0)
 
+    def delete(self):
+        gl.glDeleteTextures(1, self.name)
+
+    def __del__(self):
+        self.delete()
+        
 
 class CubeMap:
 
