@@ -56,6 +56,14 @@ class ByteTexture(Texture):
         gl.glClearTexImage(self.name, 0, gl.GL_RED_INTEGER, gl.GL_UNSIGNED_BYTE, None)
 
 
+class BytesTexture(Texture):
+
+    _type = gl.GL_RGB8UI
+
+    def clear(self):
+        gl.glClearTexImage(self.name, 0, gl.GL_RGBA_INTEGER, gl.GL_UNSIGNED_BYTE, None)
+        
+
 class NormalTexture(Texture):
 
     _type = gl.GL_RGBA16F
@@ -63,8 +71,13 @@ class NormalTexture(Texture):
 
 class DepthTexture(Texture):
 
-    _type = gl.GL_DEPTH_COMPONENT32F
+    _type = gl.GL_DEPTH_COMPONENT16
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        gl.glTextureParameteri(self.name, gl.GL_TEXTURE_COMPARE_MODE, gl.GL_NONE)
+        #gl.glTextureParameteri(self.name, gl.GL_DEPTH_TEXTURE_MODE, gl.GL_LUMINANCE)
+        
     def clear(self):
         # gl.glClearTexImage(self.name, 0, gl.GL_DEPTH, gl.GL_BYTE, None)  # Correct?
         pass

@@ -26,11 +26,12 @@ class FrameBuffer:
     """
 
     def __init__(self, size: Tuple[int, int], textures: Dict[str, Texture],
-                 depth_unit: int=None, autoclear: bool=False):
+                 depth_unit: int=None, autoclear: bool=False, set_viewport: bool=True):
 
         self.name = gl.GLuint()
         self.size = w, h = size
         self.autoclear = autoclear
+        self.set_viewport = set_viewport
 
         gl.glCreateFramebuffers(1, byref(self.name))
         gl.glBindFramebuffer(gl.GL_FRAMEBUFFER, self.name)
@@ -65,6 +66,8 @@ class FrameBuffer:
         gl.glBindFramebuffer(gl.GL_FRAMEBUFFER, self.name)
         if self.autoclear:
             self.clear()
+        if self.set_viewport:
+            gl.glViewport(0, 0, *self.size)
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         gl.glBindFramebuffer(gl.GL_FRAMEBUFFER, 0)
@@ -81,7 +84,7 @@ class FrameBuffer:
     def delete(self):
         gl.glDeleteFramebuffers(1, (c_uint*1)(self.name))
         
-    def read_pixel(self, name: str, x: int, y: int, gl_type=gl.GL_FLOAT):
+    def read_pixel(self, name: str, x: int, y: int, gl_type=gl.GL_FLOAT, gl_format=gl.GL_RGBA):
         """
         This is probably inefficient, but a useful way to find e.g. the scene position
         under the mouse cursor.
@@ -91,7 +94,7 @@ class FrameBuffer:
         position_value = (c_type * 4)()
         with self:
             gl.glReadBuffer(gl.GL_COLOR_ATTACHMENT0 + texture.unit)
-            gl.glReadPixels(x, y, 1, 1, gl.GL_RGBA, gl_type, byref(position_value))
+            gl.glReadPixels(x, y, 1, 1, gl_format, gl_type, byref(position_value))
         return list(position_value)
 
     def __repr__(self):

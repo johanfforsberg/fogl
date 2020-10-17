@@ -46,7 +46,7 @@ class Mesh:
         try:
             self.vao.delete()
             self.vertices.delete()
-        except ImportError:
+        except (AttributeError, ImportError):
             pass
     
 
