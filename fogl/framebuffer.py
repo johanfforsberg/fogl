@@ -25,8 +25,8 @@ class FrameBuffer:
     units.
     """
 
-    def __init__(self, size: Tuple[int, int], textures: Dict[str, Texture],
-                 depth_unit: int=None, autoclear: bool=False, set_viewport: bool=True):
+    def __init__(self, size: Tuple[int, int], textures: Dict[str, Texture]={},
+                 depth_unit: int=None, autoclear: bool=False, set_viewport: bool=False):
 
         self.name = gl.GLuint()
         self.size = w, h = size

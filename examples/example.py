@@ -46,25 +46,19 @@ class FoglWindow(pyglet.window.Window):
         self.suzanne = ObjMesh(local / "obj/suzanne.obj", texture=texture)
 
         # A simple plane
+        plane_size = 3
         self.plane = Mesh([
 
             # position        color          normal          texture coord
-            ((1., 1., 0.),    (1., 1., 1.),  (0., 0., -1.),  (1., 1., 1.)),
-            ((-1., 1., 0.),   (1., 1., 1.),  (0., 0., -1.),  (0., 1., 1.)),
-            ((1., -1., 0.),   (1., 1., 1.),  (0., 0., -1.),  (1., 0., 1.)),
-            ((-1., -1., 0.),  (1., 1., 1.),  (0., 0., -1.),  (0., 0., 1.)),
+            ((plane_size, plane_size, 0.),    (1., 1., 1.),  (0., 0., -1.),  (1., 1., 1.)),
+            ((-plane_size, plane_size, 0.),   (1., 1., 1.),  (0., 0., -1.),  (0., 1., 1.)),
+            ((plane_size, -plane_size, 0.),   (1., 1., 1.),  (0., 0., -1.),  (1., 0., 1.)),
+            ((-plane_size, -plane_size, 0.),  (1., 1., 1.),  (0., 0., -1.),  (0., 0., 1.)),
 
         ], texture=texture)
 
         self.shadow_size = 256, 256
-        shadow_textures = dict(
-            # These will represent the different channels of the framebuffer,
-            # that the shader can render to.
-            color=Texture(self.shadow_size, unit=0),
-            normal=NormalTexture(self.shadow_size, unit=1),
-            position=NormalTexture(self.shadow_size, unit=2),
-        )
-        self.shadow_buffer = FrameBuffer(self.shadow_size, shadow_textures, autoclear=True)
+        self.shadow_buffer = FrameBuffer(self.shadow_size, autoclear=True, depth_unit=3, set_viewport=True)
         
         self.vao = VertexArrayObject()
 
@@ -79,68 +73,31 @@ class FoglWindow(pyglet.window.Window):
             normal=NormalTexture(self.size, unit=1),
             position=NormalTexture(self.size, unit=2),
         )
-        self.offscreen_buffer = FrameBuffer(self.size, render_textures, autoclear=True)
+        self.offscreen_buffer = FrameBuffer(self.size, render_textures, autoclear=True, set_viewport=True)
         return pyglet.event.EVENT_HANDLED  # Work around pyglet internals
 
     @try_except_log
     def on_draw(self):
 
-        # Render shadow buffer
-        with self.shadow_buffer, self.view_program, enabled(gl.GL_DEPTH_TEST), disabled(gl.GL_CULL_FACE):
-            gl.glDepthMask(gl.GL_TRUE)
-
-            w, h = self.shadow_size
-            aspect = h / w
-            
-            near = 5
-            far = 12
-            width = 2
-            height = 2 * aspect
-            # frustum = (Matrix4.new(
-            #     near / width, 0, 0, 0,
-            #     0, near / height, 0, 0,
-            #     0, 0, -(far + near)/(far - near), -1,
-            #     0, 0, -2 * far * near/(far - near), 0
-            # ))
-            frustum = Matrix4.new_perspective(0.5, 1, 5, 10)
-            view_matrix = (Matrix4
-                           .new_identity()
-                           .translate(0, 0, -8)
-                           .rotatey(0.5)
-                           .rotatex(0.3))
-            shadow_view_matrix = frustum * view_matrix
-            light_pos = (view_matrix.inverse() * Point3(0, 0, 0))
-            model_matrix = (Matrix4
-                            .new_identity()
-                            .rotatex(-math.pi/2)
-                            # .rotatey(-math.pi/5)
-                            .rotatez(time()))  # Rotate over time
-            print(light_pos)
-            gl.glUniformMatrix4fv(0, 1, gl.GL_FALSE,
-                                  gl_matrix(frustum * view_matrix))
-            gl.glUniformMatrix4fv(1, 1, gl.GL_FALSE,
-                                  gl_matrix(model_matrix))            
-            gl.glUniform4f(2, 0.9, 0.3, 0.4, 1)
-            gl.glCullFace(gl.GL_FRONT)
-            self.suzanne.draw()
-
-            # We'll also draw a plane which is stationary
-            model_matrix = Matrix4.new_rotatex(-.5).rotatey(2.5).translate(0, 0, 2)
-            gl.glUniformMatrix4fv(1, 1, gl.GL_FALSE,
-                                  gl_matrix(model_matrix))
-            gl.glUniform4f(2, 0.3, 1, 0.3, 1)  # Set the "color" uniform to green
-            self.plane.draw(mode=gl.GL_TRIANGLE_STRIP)
-            gl.glCullFace(gl.GL_BACK)
-            
+        # Model matrix we'll use to position the main model
+        suzanne_model_matrix = (Matrix4
+                        .new_identity()
+                        .rotatex(-math.pi/2)
+                        .rotatez(time()))  # Rotate over time
+        plane_model_matrix = Matrix4.new_rotatey(math.pi).translate(0, 0, 2)
+        
         # Render to an offscreen buffer
         with self.offscreen_buffer, self.view_program, \
                 enabled(gl.GL_DEPTH_TEST), disabled(gl.GL_CULL_FACE):
 
+            gl.glDepthMask(gl.GL_TRUE)
+            
             w, h = self.size
             aspect = h / w
             
+            # Calculate a view frustum; this is basically our camera.
             near = 5
-            far = 12
+            far = 15
             width = 2
             height = 2 * aspect
             frustum = (Matrix4.new(
@@ -150,44 +107,59 @@ class FoglWindow(pyglet.window.Window):
                 0, 0, -2 * far * near/(far - near), 0
             ))
 
-            gl.glDepthMask(gl.GL_TRUE)
-            
-            # Calculate a view frustum; this is basically our camera.
-
-            # First we'll draw our OBJ model
+            # The view matrix positions the camera in the scene
             view_matrix = (Matrix4
                            .new_identity()
                            .translate(0, 0, -8))
-            model_matrix = (Matrix4
-                            .new_identity()
-                            .rotatex(-math.pi/2)
-                            # .rotatey(-math.pi/5)
-                            .rotatez(time()))  # Rotate over time
-            # Send the matrix to GL
+            
+            # Send the matrices to GL
             gl.glUniformMatrix4fv(0, 1, gl.GL_FALSE,
                                   gl_matrix(frustum * view_matrix))
             gl.glUniformMatrix4fv(1, 1, gl.GL_FALSE,
-                                  gl_matrix(model_matrix))            
+                                  gl_matrix(suzanne_model_matrix))            
             
             gl.glUniform4f(2, 0.3, 0.3, 1, 1)  # Set the "color" uniform to blue
             self.suzanne.draw()
 
-            # We'll also draw a plane which is stationary
-            model_matrix = Matrix4.new_rotatex(-.5).rotatey(2.5).translate(0, 0, 2)
+            # We'll also draw a simple plane behind the main model
             gl.glUniformMatrix4fv(1, 1, gl.GL_FALSE,
-                                  gl_matrix(model_matrix))
+                                  gl_matrix(plane_model_matrix))
             gl.glUniform4f(2, 0.3, 1, 0.3, 1)  # Set the "color" uniform to green
             self.plane.draw(mode=gl.GL_TRIANGLE_STRIP)
 
-        # Now copy the offscreen buffer to the window's buffer
+        # Render shadow buffer
+        # Basically the same scene as above, but to a different buffer and from a different view
+        with self.shadow_buffer, self.view_program, enabled(gl.GL_DEPTH_TEST), disabled(gl.GL_CULL_FACE):
+            gl.glDepthMask(gl.GL_TRUE)
+
+            frustum = Matrix4.new_perspective(1, 1, 1, 12)
+            view_matrix = (Matrix4
+                           .new_identity()
+                           .translate(0, 0, -4)
+                           .rotatey(0.5)
+                           .rotatex(0.3))
+            light_pos = (view_matrix.inverse() * Point3(0, 0, 0))
+            light_view_matrix = frustum * view_matrix
+            gl.glUniformMatrix4fv(0, 1, gl.GL_FALSE,
+                                  gl_matrix(frustum * view_matrix))
+            gl.glUniformMatrix4fv(1, 1, gl.GL_FALSE,
+                                  gl_matrix(suzanne_model_matrix))            
+            gl.glUniform4f(2, 0.9, 0.3, 0.4, 1)
+            self.suzanne.draw()
+            
+            gl.glUniformMatrix4fv(1, 1, gl.GL_FALSE,
+                                  gl_matrix(plane_model_matrix))
+            self.plane.draw(mode=gl.GL_TRIANGLE_STRIP)
+            
+        # Now draw the offscreen buffer to the window's buffer, combining it with the
+        # lighting information to get a nice image.
         with self.vao, self.copy_program, disabled(gl.GL_CULL_FACE, gl.GL_DEPTH_TEST):
-            # Bind some of the offscreen buffer's textures so the shader can read them.
-            # with self.shadow_buffer["color"], self.shadow_buffer["normal"], \
-            #          self.shadow_buffer["position"], self.shadow_buffer["depth"]:
-            #    gl.glDrawArrays(gl.GL_TRIANGLES, 0, 6)
             gl.glUniform3f(0, *light_pos)
-            gl.glUniformMatrix4fv(1, 1, gl.GL_FALSE, gl_matrix(shadow_view_matrix))
-            with self.offscreen_buffer["color"], self.offscreen_buffer["normal"], self.offscreen_buffer["position"], self.shadow_buffer["depth"]:
+            gl.glUniformMatrix4fv(1, 1, gl.GL_FALSE, gl_matrix(light_view_matrix))
+            # Bind some of the offscreen buffer's textures so the shader can read them.
+            with self.offscreen_buffer["color"], self.offscreen_buffer["normal"], \
+                    self.offscreen_buffer["position"], self.shadow_buffer["depth"]:
+                gl.glViewport(0, 0, *self.size)
                 gl.glDrawArrays(gl.GL_TRIANGLES, 0, 6)
 
 

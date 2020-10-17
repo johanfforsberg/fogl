@@ -56,7 +56,7 @@ class ObjMesh(Mesh):
     Loads data from an OBJ (loghtwave) file into a mesh.
     """
 
-    def __init__(self, path: str, texture: Texture):
+    def __init__(self, path: str, texture: Texture=None):
         with open(path) as f:
             data = parse_obj_file(f)
 
