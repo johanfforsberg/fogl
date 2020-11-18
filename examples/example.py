@@ -146,7 +146,7 @@ class FoglWindow(pyglet.window.Window):
             light_pos = (view_matrix.inverse() * Point3(0, 0, 0))
             light_view_matrix = frustum * view_matrix
             gl.glUniformMatrix4fv(0, 1, gl.GL_FALSE,
-                                  gl_matrix(frustum * view_matrix))
+                                  gl_matrix(light_view_matrix))
             gl.glUniformMatrix4fv(1, 1, gl.GL_FALSE,
                                   gl_matrix(suzanne_model_matrix))            
             gl.glUniform4f(2, 0.9, 0.3, 0.4, 1)
