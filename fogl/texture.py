@@ -6,7 +6,6 @@ from ctypes import byref
 from math import pi, sqrt
 from typing import Tuple, Mapping, List
 
-from euclid3 import Matrix4
 from pyglet import gl
 
 from .glutil import gl_matrix
@@ -89,6 +88,8 @@ class DepthTexture(Texture):
         super().__init__(*args, **kwargs)
         gl.glTextureParameteri(self.name, gl.GL_TEXTURE_COMPARE_MODE, gl.GL_NONE)
         #gl.glTextureParameteri(self.name, gl.GL_DEPTH_TEXTURE_MODE, gl.GL_LUMINANCE)
+        gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_WRAP_T, gl.GL_CLAMP_TO_BORDER)
+        gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_WRAP_S, gl.GL_CLAMP_TO_BORDER)
         
     def clear(self):
         # gl.glClearTexImage(self.name, 0, gl.GL_DEPTH, gl.GL_BYTE, None)  # Correct?
